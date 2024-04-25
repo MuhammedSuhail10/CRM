@@ -1,0 +1,52 @@
+{% extends 'admin/common.html' %}
+{% block content %}
+<div class="card" style="margin: 3rem 2rem;">
+    <div class="d-flex justify-content-between">
+        <h4 class="card-header">Follow Ups</h4>
+
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Lead</th>
+                <th>Number</th>
+                <th>Status</th>
+                <th>Course</th>
+                <th>Notes</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody class="table-border-bottom-0 leads-list">
+            {% if duty %}
+            {% for i in duty %}
+            <tr class="lead">
+                <td><h5>{{i.leed.name}}</h5></td>
+                <td><h6>{{i.leed.number}}</h6></td>
+                <td>{{i.status}} : {{i.progress}}</td>
+                <td>{{i.course}}</td>
+                <td>{{i.notes}}</td>
+                <td class="d-flex justify-content-center align-items-center" style="height:4em"><a href="{% url 'lead_status' i.leed.id %}"
+                                                                                style="text-decoration: none;">
+                    <button class="p-2 btn d-flex justify-content-center align-items-center "
+                            style="width: auto; height: 30px; background-color:#52796f; color: white; border-radius: 5px;">
+                        view
+                    </button>
+                </a></td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td>No Duty To Assign</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

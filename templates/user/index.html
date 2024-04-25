@@ -1,0 +1,243 @@
+{% extends 'user/common.html' %}
+{% load static %}
+{% block content %}
+<div class="container-lg "
+         style="background-color:#355070 ; height: 6em; margin-top: 4.8em;border-radius: 6px;">
+    <h3 class="morning pt-3">Good Morning {{user.first_name}} ,</h3>
+    <p class="wish" style="font-size:12pt"> It's a pleasure to have you here. Have a great day!</p>
+</div>
+{% if messages %}
+<div class="container-lg "
+     style="background-color:#277da1 ; height: fit-content; margin-top: 0.5em;border-radius: 6px;padding:1em">
+
+    <ul class="messages">
+        {% for message in messages %}
+
+        <li
+                {% if message.tags %} class="{{ message.tags }}" {% endif %}><strong>{{ message }}</strong>
+        </li>
+        {% endfor %}
+    </ul>
+
+
+</div>
+  {% endif %}
+<div class="container-lg "
+     style="background-color:#4c956c ; height: fit-content; margin-top: 0.5em;border-radius: 6px;padding:1em">
+    <div class="row text-light">
+        {% if daily %}
+        <div class="col-4">
+            <h6><strong>Daily Quality : {{daily.target}}</strong></h6>
+        </div>
+        <div class="col-4 text-center">
+            <h6><strong>Quality Completed : {{daily.target_won}}</strong></h6>
+        </div>
+        <div class="col-4 text-end">
+            <h6><strong>Quality Uncompleted : {{daily.target_remaining}}</strong></h6>
+        </div>
+        {% else %}
+        <div class="col-4">
+            <h6><strong> Quality : {{yesterday.target}}</strong></h6>
+        </div>
+        <div class="col-4 text-center">
+            <h6><strong>Quality Completed : {{yesterday.target_won}}</strong></h6>
+        </div>
+        <div class="col-4 text-end">
+            <h6><strong>Quality Uncompleted : {{yesterday.target_remaining}}</strong></h6>
+        </div>
+        {% endif %}
+    </div>
+    <div class="row text-light mt-2">
+        <div class="col-4">
+            <h6><strong>Monthly Target : {{target.target}}</strong></h6>
+        </div>
+        <div class="col-4 text-center">
+            <h6><strong>Target Completed : {{target.target_won}}</strong></h6>
+        </div>
+        <div class="col-4 text-end">
+            <h6><strong>Target Remaining : {{target.target_remaining}}</strong></h6>
+        </div>
+    </div>
+</div>
+<div class="row mt-4"
+     style=" display: flex;justify-content: center;align-items: center;width:100%">
+    <div class="col-md-6 col-12">
+        <div class="container p-4" style="box-shadow: 1px 1px 1px 1px #9a8c98; width: 85%;border:1px solid #9a8c98">
+
+            <canvas id="myChart" style="width:100%;max-width:900px;height: 20em;"></canvas>
+
+            <script>
+                var xValues = ["uncompleted", "follow up","won"];
+                var yValues = [{{uncompleted}}, {{completed}}, {{l_won}}];
+                var barColors = [
+                  "#277da1", "#52796f","#355070"
+                ];
+                new Chart("myChart", {
+                  type: "doughnut",
+                  data: {
+                    labels: xValues,
+                    datasets: [{
+                      backgroundColor: barColors,
+                      data: yValues
+                    }]
+                  },
+                  options: {
+                    title: {
+                      display: true,
+                      text: "DAILY PENDING"
+                    }
+                  }
+                });
+            </script>
+        </div>
+    </div>
+    <div class="col-md-6 col-12">
+        <div class="container p-4" style="box-shadow: 1px 1px 1px 1px #9a8c98; width: 85%;border:1px solid #9a8c98">
+            <script type="text/javascript">
+                window.onload = function () {
+var monthNames = [
+"January", "February", "March", "April", "May", "June",
+"July", "August", "September", "October", "November", "December"
+];
+var chart = new CanvasJS.Chart("chartContainer",
+{
+title:{
+text: "Leads Won"
+},
+data: [
+{
+type: "bar",
+dataPoints: [
+{% for i in won %}
+{ y: {{i.count}}, label: monthNames[{{i.month}} - 1]},
+{% endfor %}
+]
+}
+]
+});
+
+chart.render();
+}
+            </script>
+            <script type="text/javascript" src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+        </div>
+
+    </div>
+    <div class="container-lg mt-5" style="height:auto;">
+        <h2 style="margin-left: 2.5em;color: rgba(89, 108, 125, 1);">Total</h2>
+        <div class="container-md d-flex flex-wrap justify-content-around">
+            <div class="boxes">{{total_duty}} Leads Assigned</div>
+            <div class="boxes">{{callbacks}} Callbacks</div>
+            <div class="boxes">{{total_won}} Leads Won</div>
+            <div class="boxes">{{completed}} Follow Ups</div>
+        </div>
+    </div>
+    <div class="container mt-5">
+        <div class="d-flex">
+            <h2 style="margin-left: 1.2em;color: rgba(89, 108, 125, 1);">Leads Of The
+                Day</h2>
+        </div>
+        <div class="container-lg overflow-auto mt-3">
+            <table class="table table-bordered ">
+                <thead>
+                <tr>
+                    <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Sl no</th>
+                    <th scope="col" class="p-4" style=" background-color:#52796f;color:#edede9;">Name</th>
+                    <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Phone Number</th>
+                    <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Email</th>
+                    <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Lead Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in duty %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{i.lead.name}}</td>
+                    <td>{{i.lead.number}}</td>
+                    <td>{{i.lead.email}}</td>
+                    <td class="d-flex justify-content-center align-items-center"><a href="{% url 'status' i.lead.id %}"
+                                                                                    style="text-decoration: none;">
+                        <button class="btn btn-primary p-2 d-flex justify-content-center align-items-center">
+                            View
+                        </button>
+                    </a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="container mt-1  d-flex justify-content-center align-items-center">
+            <!-- Create a small circle using Bootstrap -->
+            <div class="text-white d-flex justify-content-center align-items-center rounded-circle circle" style="background-color: #355070;  box-shadow: 0px 2px 0px 2px rgb(183, 182, 182);   position: relative;
+  animation: myfirst 1s infinite ;">
+                <a href="lead" style="color: white; text-decoration: none;"> <span style='font-size:30px;'>&#8595;</span></a>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-5">
+        <h2 style="margin-left: 1.2em; margin-top: 5%;color: rgba(89, 108, 125, 1);">Callbacks</h2>
+        <div class="container-lg overflow-auto mt-3">
+            <table class="table table-bordered ">
+                <thead>
+                <tr>
+                    <th scope="col" class="p-4" style="background-color: #52796f;color:#edede9;">Sl no</th>
+                    <th scope="col" class="p-4" style="background-color: #52796f;color:#edede9;">Date</th>
+                    <th scope="col" class="p-4" style="background-color: #52796f;color:#edede9;">Name</th>
+                    <th scope="col" class="p-4" style="background-color: #52796f;color:#edede9;">Number</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in calls %}
+                <tr>
+                    <th scope="row">{{forloop.counter}}</th>
+                    <td>{{i.date}}</td>
+                    <td>{{i.duty.lead.name}}</td>
+                    <td>{{i.duty.lead.number}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="container mt-1  d-flex justify-content-center align-items-center">
+            <!-- Create a small circle using Bootstrap -->
+            <div class="text-white d-flex justify-content-center align-items-center rounded-circle circle" style="background-color: #355070 ;  box-shadow: 0px 2px 0px 2px rgb(183, 182, 182);   position: relative;
+  animation: myfirst 1s infinite ;">
+                <a href="callbacks" style="color: white; text-decoration: none;"> <span style='font-size:30px;'>&#8595;</span></a>
+            </div>
+        </div>
+    </div>
+    <!-- syllabus -->
+    <div class="container mt-5" style="margin-bottom: 10%;" id="syllabus">
+        <h2 style="margin-left: 1.2em; margin-top: 5%;color: rgba(89, 108, 125, 1);">Syllabus</h2>
+        <div class="container-lg overflow-auto mt-3">
+            <table class="table table-bordered ">
+                <thead>
+                <tr>
+                    <th scope="col" class="p-4 " style=" background-color: #52796f;color:#edede9;">Sl no</th>
+                    <th scope="col" class="p-4 " style=" background-color: #52796f;color:#edede9;">Course</th>
+                    <th scope="col" class="p-4 " style=" background-color: #52796f;color:#edede9;">Duration</th>
+                    <th scope="col" class="p-4 " style=" background-color: #52796f;color:#edede9;">Fees</th>
+                    <th scope="col" class="p-4 " style=" background-color: #52796f;color:#edede9;">Syllabus</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in courses %}
+                <tr>
+                    <th scope="row">1</th>
+                    <td>{{i.name}}</td>
+                    <td>Course Duration : {{i.duration}} <br> Internship Duration : {{i.internship}}</td>
+                    <td>Base Fees : {{i.rate}} &nbsp; Gst : {{i.gst}}% <br>Total Rate : {{i.total_rate}}</td>
+                    <!--        <td class="d-flex justify-content-center align-items-center"></td>-->
+                    <td><a href="{{ i.syllabus.url }}" target="_blank" download>
+                        <button class="btn btn-primary">Download</button>
+                    </a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

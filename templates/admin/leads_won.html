@@ -1,0 +1,41 @@
+{% extends 'admin/common.html' %}
+ {% block content %}
+<div class="card" style="margin: 3rem 2rem;">
+    <div class="d-flex justify-content-between">
+                <h4 class="card-header">Leads Won</h4>
+
+    </div>
+                <div class="table-responsive text-nowrap">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Sales Person</th>
+                        <th>Lead Name</th>
+                        <th>Lead Number</th>
+                        <th>Course</th>
+                        <th>Mode</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0 leads-list">
+                    {% if won %}
+                    {% for j in won %}
+                      <tr class="lead">
+                          <td><h6>{{j.duty.sale}}</h6></td>
+                          <td><h5 style="font-size:12pt;margin-top:0.6em">{{j.duty.lead}}</h5></td>
+                        <td>{{j.duty.lead.number}}</td>
+                          <td>{{j.course}}</td>
+                          <td>{{j.mode}}<br>{{j.type}}</td>
+
+                      </tr>{% endfor %}
+                    {% else %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                          <td>No leads won yet ...</td>
+                    </tr>{% endif %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+{% endblock %}

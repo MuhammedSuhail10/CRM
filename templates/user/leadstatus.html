@@ -1,0 +1,205 @@
+{% extends 'user/common.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container" id="container_lead">
+    <div class="d-flex justify-content-between" style="margin-top: 6em;">
+        <h2 style=" color: rgba(89, 108, 125, 1); margin-bottom: 1em">Status of
+            {{leed}} ( <a style="text-decoration:none;color:#669bbc " href="tel:{{leed.number}}">{{leed.number}}</a> )</h2>
+        {% if leed.lead_status != 'Won' %}
+        <button type="button" style="height:fit-content" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                class="btn btn-primary">
+            <svg style="margin-top:-0.2em" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                 class="bi bi-plus-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>&nbsp;Add Status
+        </button>
+        {% endif %}
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Status</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-floating mt-2">
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="progress"
+                                    name="wp"
+                                    aria-describedby="floatingInputHelp"
+                            />
+                            <label for="floatingInput">Whatsapp</label>
+                        </div>
+                        <select onchange="changestatus()" name="progress" class="form-select mt-2"
+                                id="inputGroupSelect01">
+                            <option selected>Select progress</option>
+                            <option value="Not Contacted Yet">Not Contacted Yet</option>
+                            <option value="Not Answering">Not Answering</option>
+                            <option value="Busy">Person Busy</option>
+                            <option value="Contacted">Contacted:Waiting For Reply</option>
+                            <option value="Got Appointment">Got Appointment</option>
+                            <option value="Payment">Payment Received</option>
+                            <option value="Not InterestedPayment">Not Interested</option>
+                        </select>
+                        <div class="form-floating mt-2" id="status"></div>
+                        <div class="form-floating mt-2" id="callback"></div>
+                        <div class="form-floating mt-2" id="payment"></div>
+                        <script>
+                            function changestatus(){
+                                var x = document.getElementById("inputGroupSelect01").value;
+                                console.log(x)
+                                if (x == 'Not Contacted Yet' || x == 'Not Answering' || x=='Busy'){
+                                var y = 'Not Answering'
+                                }
+                                else if (x=='Contacted' || x=='Got Appointment'){
+                                var y = 'Follow Up';
+                                var z = 'Date'}
+                                else if (x=='Payment'){
+                                var y = 'Won'
+                                var k = 'Won'}
+                                else {
+                                var y = 'Lost'}
+                                document.getElementById("status").innerHTML = '<input class="form-control" aria-describedby="floatingInputHelp" name="status" type="text" value="'+y+'" readonly><label for="floatingInput">Status</label>'
+                                if (z == 'Date') {
+        document.getElementById("callback").innerHTML = '<input type="date" class="form-control" placeholder="" name="date" aria-describedby="floatingInputHelp" required /><label for="floatingInput">Date</label><select name="courses" class="form-select mt-2" id="inputGroupSelect01"><option selected>Course</option>{% for i in course %}<option value="{{i.name}}">{{i.name}}</option>{% endfor %}</select>';
+    } else {
+        document.getElementById("callback").innerHTML = '';
+    }
+    if (k == 'Won') {
+        document.getElementById("payment").innerHTML += '<input type="text" class="form-control" id="floatingInput" placeholder="" name="rate" aria-describedby="floatingInputHelp" required/><label for="floatingInput">Advance Rate</label><select name="course" class="form-select mt-2" id="inputGroupSelect01"><option selected>Course</option>{% for i in course %}<option value="{{i.name}}">{{i.name}}</option>{% endfor %}</select><select name="mode" class="form-select mt-2" id="inputGroupSelect01"><option selected>Mode of Training</option><option value="Course">Course</option><option value="Internship">Internship</option></select><select name="type" class="form-select mt-2" id="inputGroupSelect01"><option selected>Type of Training</option><option value="Online">Online</option><option value="Offline">Offline</option></select><input type="file" class="form-control mt-2" id="floatingInput" placeholder="" name="ss" accept="image/*" aria-describedby="floatingInputHelp"/><p style="color:red;">Only images accepted</p>';
+    } else {
+        document.getElementById("payment").innerHTML = '';
+    }
+                            }
+                        </script>
+                        <div class="form-floating mt-2">
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="floatingInput"
+                                    placeholder="Notes"
+                                    name="notes"
+                                    aria-describedby="floatingInputHelp"
+                                    required
+                            />
+                            <label for="floatingInput">Notes</label>
+                        </div>
+                        <div class="form-floating mt-2">
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="probability"
+                                    name="probability"
+                                    aria-describedby="floatingInputHelp"
+                            />
+                            <label for="floatingInput">Probability</label>
+                        </div>
+
+                        <button name="statuses" type="submit" class="btn btn-primary mt-4">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+    <div class="container-lg overflow-auto">
+        <table class="table table-bordered ">
+            <thead>
+
+            <tr>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Contacted On</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Progress</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Status</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Notes</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Course</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Probability</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Whatsapp</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if status %}
+            {% for i in status %}
+            <tr>
+                <th scope="row">{{i.last_contacted}}</th>
+                <td>{{i.progress}}</td>
+                <td>{{i.status}}</td>
+                <td>{{i.notes}}</td>
+                <td>{{i.course}}</td>
+                <td>{{i.probability}}</td>
+                <td>{{i.watsapp}}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <th>No Status Yet</th>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="container" id="container_lead">
+    <div class="d-flex justify-content-between" style="margin:3em 0">
+        <h2 style=" color: rgba(89, 108, 125, 1); ">Payments of
+            {{leed}}</h2>
+    </div>
+</div>
+    <div class="container-lg overflow-auto">
+        <table class="table table-bordered ">
+            <thead>
+
+            <tr>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Course</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Rate</th>
+                <th scope="col" class="p-4" style="background-color: #52796f;color:#edede9;">Screenshot</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Mode</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Date</th>
+                <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if payment %}
+            {% for i in payment %}
+            <tr>
+                <th scope="row">{{i.won.course}}</th>
+                <td>{{i.rate}}</td>
+                <td><a href="{{i.screenshot.url}}"> <img src="{{i.screenshot.url}}" style="height:5em"></a></td>
+                <td>{{i.won.mode}}<br>{{i.won.type}}</td>
+                <td>{{i.won.won_on}}</td>
+                <td><a href="{% url 'del_payment' i.id %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" class="bi bi-trash"
+                         viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                    </svg>
+                </a></td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td>No Payment Yet</td>
+                <td></td>
+                <th></th>
+                <td></td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

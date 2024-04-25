@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>View PDF Files</title>
+     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>emergio</title>
+
+    <style>
+        body {
+
+            text-align:center;
+
+            background-image: url("/static/images/it.jpg");
+             background-position:cover;
+             background-repeat:no-repeat;
+              background-size: 100% auto;
+            }
+            .Titles>a{
+            color:black;
+            text-decoration:none;
+            }
+            .home-icon {
+             width: 24px; /* Adjust the width and height as needed */
+            height: 24px;
+            margin-right: 8px; /* Add some spacing between the text and the icon */
+            vertical-align: middle; /* Align the icon vertically with the text */
+}
+    </style>
+
+</head>
+<body>
+ <form action="pdf" method="post" autocomplete="on"enctype="multipart/form-data">
+          <input type="hidden" name="csrfmiddlewaretoken" value="W8UmKycmJnptnFHENSQZCGXdGeaDOpGRfnKiPu1cbGew1wXsYcFe9OgVKuAFu9Id">
+ <div id="canvas">
+        <div class="container">
+        <!-- header section starts here -->
+        <header>
+            <div class="contentArea">
+                <div class="logo"><img src="/static/images/Emergio_logo2.png"></div>
+
+        </header>
+        </div>
+    </div>
+<div class="banner">
+                <div class="contentArea">
+                    <div class="Titles">
+
+                        <h2>WE HELP TRANSFORM STUDENTS INTO CAREERS WHERE THEY CAN EARN BETTER</h2>
+                        <h3>Emergio is a provider of skill development courses in IT, Designing, Management, and Accounting. </h3>
+
+                                           <h1>SYLLABUS</h1>
+
+        
+
+                <a href="" download="UIUX.pdf">UI/UX</a><br><br>
+
+        
+
+                <a href="/pdfs/Graphic_Designing_-_Emergio_2_3.pdf" target="_blank">Graphic design</a><br><br>
+
+        
+
+                <a href="/media/pdfs/HRM_-_Emergio_2_1.pdf" target="_blank">Human Resource Management</a><br><br>
+
+        
+
+                <a href="/media/pdfs/Python_-_Emergio_1_1.pdf" target="_blank">Python</a><br><br>
+
+        
+
+                <a href="/media/pdfs/2D__Game_Art_Final_Emergio_MESMXU3.pdf" target="_blank">Game Art</a><br><br>
+
+        
+
+                <a href="/media/pdfs/Unity_Game_Development_-_Emergio_1.pdf_2_1.pdf" target="_blank">Game Development</a><br><br>
+
+        
+
+                <a href="/media/pdfs/Certification_in_digital_marketing.pdf_3.pdf" target="_blank">Digital marketing</a><br><br>
+        
+
+
+                        <div class="buttons">
+    <div>
+        <a href="/">
+            <img src="/static/images/home.png" alt="Home Icon" class="home-icon">
+        </a>
+    </div>
+</div>
+ </form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

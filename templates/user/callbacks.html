@@ -1,0 +1,81 @@
+{% extends 'user/common.html' %}
+{% load static %}
+{% block content %}
+<div class="container d-flex justify-content-between" style="margin-top:6em">
+    <h2 style="color: #2b2d42; margin-bottom: 1em;font-weight:600;width:100%">Callbacks</h2>
+    <div class="search  d-flex justify-content-end">
+        <input type="text" class="searchTerm" placeholder="Search" onkeyup="search()" id="search-input">
+        <button class="searchButton">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search"
+                 viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
+        </button>
+    </div>
+</div>
+<div class="container-lg overflow-auto">
+    <table class="table table-bordered ">
+        <thead>
+        <tr>
+            <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Sl no</th>
+            <th scope="col" class="p-4" style="background-color: #52796f;color:#edede9;">Date</th>
+            <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Name</th>
+            <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Number</th>
+        </tr>
+        </thead>
+        <tbody class="leads-list">
+        {% if calls %}
+        {% for i in calls %}
+        <tr class="lead">
+            <td scope="row">{{forloop.counter}}</td>
+            <th>{{i.date}}</th>
+            <td><h5>{{i.duty.lead}}</h5></td>
+            <td><h6>{{i.duty.lead.number}}</h6></td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td></td>
+            <td>No callbacks yet ...</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+<script>
+        const search = () => {
+            const searchInput = document.getElementById("search-input").value.toUpperCase();
+            console.log(searchInput)
+            const items = document.getElementsByClassName("leads-list")
+            const product = document.querySelectorAll(".lead")
+            const names = document.getElementsByTagName("h5")
+            const numbers = document.getElementsByTagName("h6")
+            if (!isNaN(searchInput)) {
+            for (let i = 0; i < numbers.length; i++) {
+                let match = product[i].getElementsByTagName('h6')[0];
+                if (match) {
+                    let tvalue = match.textContent || match.innerHTML
+                    if (tvalue.toUpperCase().indexOf(searchInput) > -1) {
+                        product[i].style.display = "";
+                    } else {
+                        product[i].style.display = "none";
+                    }
+                }
+            }
+            }
+            else{
+            for (let i = 0; i < names.length; i++) {
+                let match = product[i].getElementsByTagName('h5')[0];
+                if (match) {
+                    let tvalue = match.textContent || match.innerHTML
+                    if (tvalue.toUpperCase().indexOf(searchInput) > -1) {
+                        product[i].style.display = "";
+                    } else {
+                        product[i].style.display = "none";
+                    }
+                }
+            }
+            }
+        }
+</script>
+{% endblock %}
