@@ -378,6 +378,12 @@ def followup(request):
         return render(request, 'admin/followups.html', {'duty': list})
     else:
         return redirect('admin_login')
+def reports(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        report = Report.objects.filter(name='followup')
+        return render(request, 'admin/reports.html',{'report':report})
+    else:
+        return redirect('admin_login')
 def loginpage(request):
     if request.method == 'POST':
         username=request.POST.get('mobile')

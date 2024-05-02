@@ -1,39 +1,43 @@
 {% extends 'admin/common.html' %}
- {% block content %}
+{% block content %}
 <div class="card" style="margin: 3rem 2rem;">
-    <div class="d-flex justify-content-between">
-                <h4 class="card-header">CallBack</h4>
+  <div class="d-flex justify-content-between">
+    <h4 class="card-header">CallBack</h4>
+  </div>
+  <div class="table-responsive text-nowrap">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Lead</th>
+          <th>Sale Person</th>
+          <th>Date Of Callback</th>
+          <th>Lead Status</th>
 
-    </div>
-                <div class="table-responsive text-nowrap">
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th>Lead</th>
-                        <th>Sale Person</th>
-                        <th>Date Of Callback</th>
-                        <th>Lead Status</th>
-
-                      </tr>
-                    </thead>
-                    <tbody class="table-border-bottom-0 leads-list">
-                    {% if calls %}
-                    {% for i in calls %}
-                      <tr class="lead">
-                          <td><h6 style="margin-top:0.6em">{{i.duty.lead.number}}</h6>({{i.duty.lead}})</td>
-                          <td><h5 style="font-size:12pt;margin-top:0.6em">{{i.duty.sale}}</h5></td>
-                          <td>{{i.date}}</td>
-                          <td><a href="{% url 'lead_status' i.duty.lead.id %}"><span class="badge bg-label-primary me-1">Lead Status</span></a></td>
-                      </tr>{% endfor %}
-                    {% else %}
-                    <tr>
-                        <td></td>
-                        <td></td>
-                          <td>No callbacks yet ...</td>
-                    </tr>{% endif %}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+        </tr>
+      </thead>
+      <tbody class="table-border-bottom-0 leads-list">
+        {% if calls %}
+        {% for i in calls %}
+        <tr class="lead">
+          <td>
+            <h6 style="margin-top:0.6em">{{i.duty.lead.number}}</h6>({{i.duty.lead}})
+          </td>
+          <td>
+            <h5 style="font-size:12pt;margin-top:0.6em">{{i.duty.sale}}</h5>
+          </td>
+          <td>{{i.date}}</td>
+          <td><a href="{% url 'lead_status' i.duty.lead.id %}"><span class="badge bg-label-primary me-1">Lead
+                Status</span></a></td>
+        </tr>{% endfor %}
+        {% else %}
+        <tr>
+          <td></td>
+          <td></td>
+          <td>No callbacks yet ...</td>
+        </tr>{% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
 
 {% endblock %}

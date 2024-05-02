@@ -27,7 +27,7 @@ urlpatterns=[
        path('followup', views.followup, name='followup'),
        path('delete-user/<int:id>', views.del_suser, name='del_suser'),
        path('settings', views.settings, name='settings'),
+       path('reports', views.reports, name='reports'),
        path('edit-admin/<int:id>', views.edit_admin, name='edit_admin'),
        path('reset-todays-leads/', views.reset_todays_leads, name='reset_todays_leads'),
-
 ]

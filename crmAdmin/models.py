@@ -70,3 +70,9 @@ class payment(models.Model):
     won = models.ForeignKey(Won, on_delete=models.CASCADE, related_name='sale')
     rate = models.CharField(max_length=100)
     screenshot = models.FileField(upload_to='media/')
+class Report(models.Model):
+    name = models.CharField(max_length=100)
+    csv = models.FileField(upload_to='report')
+    created_on = models.DateField(auto_now=True)
+    def __str__(self):
+        return f"{self.name} - {self.created_on}"

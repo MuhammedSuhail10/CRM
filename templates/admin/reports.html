@@ -1,0 +1,76 @@
+{% extends 'admin/common.html' %}
+{% block content %}
+<div class="d-flex">
+    <div class="card" style="margin: 3rem;width: 50%;">
+        <div class="d-flex justify-content-between">
+            <h4 class="card-header">Daily Reports</h4>
+        </div>
+        <div class="table-responsive text-nowrap">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0 leads-list">
+                    {% if report %}
+                    {% for i in report %}
+                    <tr class="lead">
+                        <td>
+                            <h6 style="margin-top:0.6em">{{i.created_on}}</h6>
+                        </td>
+                        <td>
+                            <a href="{{ i.csv.url }}" target="_blank" download><button class="btn btn-primary">Download</button></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td>No Reports yet ...</td>
+                        <td></td>
+                    </tr>{% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card" style="margin: 3rem;width: 50%;">
+        <div class="d-flex justify-content-between">
+            <h4 class="card-header">Monthly Reports</h4>
+        </div>
+        <div class="table-responsive text-nowrap">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Name</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0 leads-list">
+                    {% if calls %}
+                    {% for i in calls %}
+                    <tr class="lead">
+                        <td>
+                            <h6 style="margin-top:0.6em">{{i.duty.lead.number}}</h6>({{i.duty.lead}})
+                        </td>
+                        <td>
+                            <h5 style="font-size:12pt;margin-top:0.6em">{{i.duty.sale}}</h5>
+                        </td>
+                        <td>{{i.date}}</td>
+                        <td><a href="{% url 'lead_status' i.duty.lead.id %}"><span
+                                    class="badge bg-label-primary me-1">Lead
+                                    Status</span></a></td>
+                    </tr>{% endfor %}
+                    {% else %}
+                    <tr>
+                        <td></td>
+                        <td>No Reports yet ...</td>
+                        <td></td>
+                    </tr>{% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}
