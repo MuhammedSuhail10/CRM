@@ -98,7 +98,12 @@ def status(request, id):
                 date = request.POST.get('date')
                 p = leadstatus.objects.filter(leed=leed).last()
                 p.course = request.POST.get('courses')
-                p.save()
+                if course.objects.filter(name=p.course).exists():
+                    p.save()
+                else:
+                    p.delete()
+                    message = f"Course value cannot be null"
+                    messages.error(request, message)
                 if callback.objects.filter(duty=duty).exists():
                     callbacks = callback.objects.get(duty=duty)
                     callbacks.delete()
@@ -165,7 +170,6 @@ def status(request, id):
     else:
         return redirect('user_login')
 
-
 def del_payment(request, id):
     payments = payment.objects.get(id=id)
     payments.delete()
@@ -180,11 +184,26 @@ def followups(request):
         sale = saleperson.objects.filter(user=user).first()
         duty = Duty.objects.filter(sale=sale, lead__lead_status='Yes').order_by('-created_on')
         list =[]
+        current_month = datetime.now().month
+        for i in duty:
+            leads = leadstatus.objects.filter(leed=i.lead,created_on__month=current_month).last()
+            if leads:
+                list.append(leads)
+        return render(request, 'user/followups.html', {'duty': list})
+    else:
+        return redirect('user_login')
+
+def totalfollow(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        user = request.user
+        sale = saleperson.objects.filter(user=user).first()
+        duty = Duty.objects.filter(sale=sale, lead__lead_status='Yes').order_by('-created_on')
+        list =[]
         for i in duty:
             leads = leadstatus.objects.filter(leed=i.lead).last()
             if leads:
                 list.append(leads)
-        return render(request, 'user/followups.html', {'duty': list})
+        return render(request, 'user/totalfollow.html', {'duty': list})
     else:
         return redirect('user_login')
 

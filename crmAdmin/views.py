@@ -38,7 +38,7 @@ def handle_uploaded_file(uploaded_file,assign):
         name = row[0].strip()
         email = row[1].strip()
         phone = row[2].strip()
-        department = row[6].strip()
+        department = row[3].strip()
         cleaned_phone = ''.join(filter(str.isdigit, phone))
         number = cleaned_phone[2:]
         if name != 'name' and phone != 'phone':
@@ -59,6 +59,7 @@ def handle_uploaded_file(uploaded_file,assign):
                                 thirty_days = timezone.now().date() + timedelta(days=1)
                                 duty = Duty.objects.create(lead=lead,sale=i,delete_date=thirty_days)
                                 duty.save()
+                                i.total_lead = int(i.total_lead) + j
                                 i.todays_lead = int(i.todays_lead) + j
                                 i.duty_on = timezone.now()
                                 i.save()
@@ -316,7 +317,7 @@ def assign_lead(request,id):
                     i.save()
                     lead.assign_status = 'Yes'
                     lead.save()
-    return redirect(assign)
+    return redirect('assign')
 def won(request):
     if request.user.is_authenticated and request.user.is_superuser:
         won = Won.objects.all()
@@ -381,7 +382,15 @@ def followup(request):
 def reports(request):
     if request.user.is_authenticated and request.user.is_superuser:
         report = Report.objects.filter(name='followup')
-        return render(request, 'admin/reports.html',{'report':report})
+        won = Report.objects.filter(name='monthlywon')
+        followup = Report.objects.filter(name='monthlyfollowup')
+        return render(request, 'admin/reports.html',{'report':report,'won':won,'followup':followup})
+    else:
+        return redirect('admin_login')
+def naleads(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        assign = leeds.objects.filter(assign_status='NA')
+        return render(request, 'admin/notanswer.html',{'assign':assign})
     else:
         return redirect('admin_login')
 def loginpage(request):

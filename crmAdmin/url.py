@@ -28,6 +28,7 @@ urlpatterns=[
        path('delete-user/<int:id>', views.del_suser, name='del_suser'),
        path('settings', views.settings, name='settings'),
        path('reports', views.reports, name='reports'),
+       path('naleads', views.naleads, name='naleads'),
        path('edit-admin/<int:id>', views.edit_admin, name='edit_admin'),
        path('reset-todays-leads/', views.reset_todays_leads, name='reset_todays_leads'),
 ]

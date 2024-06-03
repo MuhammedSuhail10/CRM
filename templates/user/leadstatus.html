@@ -202,4 +202,9 @@
         </table>
     </div>
 </div>
+<script>
+    {% for message in messages %}
+    alert("{{ message }}");
+    {% endfor %}
+</script>
 {% endblock %}

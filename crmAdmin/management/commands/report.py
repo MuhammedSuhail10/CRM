@@ -8,7 +8,7 @@ from datetime import timedelta, datetime
 class Command(BaseCommand):
     help = 'Update Daily'
     def handle(self, *args, **kwargs):
-        self.followup()
+        # self.followup()
         self.monthly_rep()
 
     def followup(self):
@@ -70,17 +70,19 @@ class Command(BaseCommand):
                 csv_file = ContentFile(csv_buffer.getvalue().encode("utf-8"))
             won_csv = Report.objects.create(name='monthlywon')
             won_csv.csv.save(file_name,csv_file)
-            duty = Duty.objects.filter(lead__lead_status='Yes').order_by('-created_on')
+            duties = Duty.objects.filter(lead__lead_status='Yes').order_by('-created_on')
             list = []
-            for i in duty:
-                leads = leadstatus.objects.filter(leed=i.lead).last()
+            for i in duties:
+                leads = leadstatus.objects.filter(leed=i.lead,last_contacted__gte=start_of_month,last_contacted__lte=end_of_month).last()
                 if leads:
-                    dut = Duty.objects.get(lead=i.lead,created_on__gte=start_of_month,created_on__lte=end_of_month,)
-                    if dut.sale:
-                        saleperson = dut.sale.user.first_name
-                        list.append((saleperson, leads))
-                    else:
-                        list.append(('Not Asigned', leads))
+                    dut = Duty.objects.get(lead=i.lead)
+                    if dut:
+                        if dut.sale:
+                            saleperson = dut.sale.user.first_name
+                            list.append((saleperson, leads))
+                            print(list)
+                        else:
+                            list.append(('Not Asigned', leads))
             header_row = [
                 '#', 'sale', 'lead', 'lead_number','progress', 'course', 'course_value', 'notes','date'
             ]

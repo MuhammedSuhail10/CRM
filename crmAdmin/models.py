@@ -20,9 +20,11 @@ class leadstatus(models.Model):
     probability = models.CharField(max_length=100)
     course = models.CharField(max_length=100)
     notes = models.TextField()
+    created_on = models.DateField(auto_now=True)
 class saleperson(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     password = models.CharField(max_length=100)
+    total_lead = models.IntegerField(default=0)
     todays_lead = models.IntegerField(default=0)
     strength = models.CharField(max_length=500)
     def __str__(self):
@@ -45,7 +47,6 @@ class Duty(models.Model):
     won = models.CharField(max_length=3,choices=[('Yes', 'Yes'), ('No', 'No')],default='No')
     created_on = models.DateField(auto_now=True)
     delete_date = models.DateField()
-
 class course(models.Model):
     name = models.CharField(max_length=100)
     duration = models.CharField(max_length=100)
@@ -56,7 +57,6 @@ class course(models.Model):
     syllabus = models.FileField(upload_to='media/')
     def __str__(self):
         return self.name
-
 class callback(models.Model):
     duty = models.ForeignKey(Duty, on_delete=models.CASCADE)
     date = models.DateField()
@@ -76,3 +76,10 @@ class Report(models.Model):
     created_on = models.DateField(auto_now=True)
     def __str__(self):
         return f"{self.name} - {self.created_on}"
+class SaleReport(models.Model):
+    date = models.DateField(auto_now=True)
+    sale = models.ForeignKey(saleperson,on_delete=models.DO_NOTHING)
+    total = models.IntegerField()
+    follow = models.IntegerField()
+    Notanswer = models.IntegerField()
+    Notinterested = models.IntegerField()
