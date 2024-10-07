@@ -1,228 +1,100 @@
-{% extends 'admin/common.html' %}
+{% extends 'common/admin/common.html' %}
 {% block content %}
-<div class="card" style="margin: 3rem 2rem;">
-    <h2 class="card-header">Settings</h2>
-    <h5 style="margin:-0.5em 0 -0.5em 1.5em;opacity:0.8;font-size:12pt">Manage your account settings</h5>
-    <div class="card-body">
-        <h3 class="card-header">Account</h3>
-        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-10">
-                <div class="d-flex justify-content-between">
-                    <h5>User Name</h5>
-                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#username"><span
-                            class="badge bg-label-primary me-1">Change</span></button>
-                </div>
-                <p>{{user}}</p>
-            </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-1"></div>
-            <div class="col-10">
-                <div class="d-flex justify-content-between">
-                    <h5>Name</h5>
-                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#name"><span
-                            class="badge bg-label-primary me-1">Change</span></button>
-                </div>
-                <p>{{user.first_name}}</p>
-            </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-1"></div>
-            <div class="col-10">
-                <div class="d-flex justify-content-between">
-                    <h5>Password</h5>
-                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#pass"><span
-                            class="badge bg-label-primary me-1">Change</span></button>
-                </div>
-                <p>{{user.password}}</p>
-            </div>
-        </div>
+  <div class="settings-container">
+    <div class="settings-header">
+      <h1 class="text-light">Settings</h1>
+      <p>Manage your account preferences</p>
     </div>
-    <div class="card-body">
-        <div class="d-flex justify-content-between">
-            <h3 class="card-header">Admins</h3>
-            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#add"><span
-                    class="badge bg-label-primary me-1">Add</span></button>
+    <div class="settings-body">
+      <div class="setting-item">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3>Username</h3>
+            <p class="setting-value mb-0">{{ user }}</p>
+          </div>
+          <button class="btn btn-change" data-bs-toggle="modal" data-bs-target="#username">Change</button>
         </div>
-        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-10">
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>name</th>
-                            <th>Action</th>
-                        </tr>
-                        </thead>
-                        <tbody class="table-border-bottom-0">
-                        {% for i in superusers %}
-                        <tr>
-                            <td>{{i.username}}</td>
-                            <td>{{i.first_name}}</td>
-                            <td>
-                                <a href="{% url 'edit_admin' i.id %}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                         class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                        <path fill-rule="evenodd"
-                                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                                    </svg>
-                                </a>
-                                <a href="{% url 'del_suser' i.id %}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red"
-                                         class="bi bi-trash" viewBox="0 0 16 16">
-                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+      </div>
+      <div class="setting-item">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3>Name</h3>
+            <p class="setting-value mb-0">{{ user.name }}</p>
+          </div>
+          <button class="btn btn-change" data-bs-toggle="modal" data-bs-target="#name">Change</button>
         </div>
+      </div>
+      <div class="setting-item">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3>Password</h3>
+            <p class="setting-value mb-0">••••••••</p>
+          </div>
+          <button class="btn btn-change" data-bs-toggle="modal" data-bs-target="#pass">Change</button>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center align-items-center">
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#passwordModal">Delete Account</button>
+      </div>
     </div>
-</div>
+  </div>
 
-<div class="modal fade" id="username" tabindex="-1" aria-labelledby="usernameLabel" aria-hidden="true">
+  <div class="modal fade" id="username" tabindex="-1" aria-labelledby="usernameLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" value="{{user.id}}" name="id">
-                    <div class="form-floating mt-2">
-                        <input
-                                type="text" value="{{user.username}}"
-                                class="form-control"
-                                id="floatingInput"
-                                placeholder=""
-                                name="username"
-                                aria-describedby="floatingInputHelp"
-                                required
-                        />
-                        <label for="floatingInput">Username</label>
-                    </div>
-                    <button type="submit" name="name" class="btn btn-primary mt-4">Save</button>
-                </form>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-floating mt-2">
+              <input type="text" value="{{ user }}" class="form-control" id="floatingInput" placeholder="" name="username" aria-describedby="floatingInputHelp" required />
+              <label for="floatingInput">Username</label>
+            </div>
+            <button type="submit" name="name" class="btn btn-primary mt-4">Save</button>
+          </form>
+        </div>
+      </div>
     </div>
-</div>
-<div class="modal fade" id="name" tabindex="-1" aria-labelledby="nameLabel" aria-hidden="true">
+  </div>
+  <div class="modal fade" id="name" tabindex="-1" aria-labelledby="nameLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" value="{{user.id}}" name="id">
-                    <div class="form-floating mt-2">
-                        <input
-                                type="text" value="{{user.first_name}}"
-                                class="form-control"
-                                id="floatingInput"
-                                placeholder=""
-                                name="names"
-                                aria-describedby="floatingInputHelp"
-                                required
-                        />
-                        <label for="floatingInput">Name</label>
-                    </div>
-                    <button type="submit" name="fname" class="btn btn-primary mt-4">Save</button>
-                </form>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-floating mt-2">
+              <input type="text" value="{{ user.name }}" class="form-control" id="floatingInput" placeholder="" name="names" aria-describedby="floatingInputHelp" required />
+              <label for="floatingInput">Name</label>
+            </div>
+            <button type="submit" name="fname" class="btn btn-primary mt-4">Save</button>
+          </form>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<div class="modal fade" id="pass" tabindex="-1" aria-labelledby="passLabel" aria-hidden="true">
+  <div class="modal fade" id="pass" tabindex="-1" aria-labelledby="passLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" value="{{user.id}}" name="id">
-                    <div class="form-floating mt-2">
-                        <input
-                                type="text"
-                                class="form-control"
-                                id="floatingInput"
-                                placeholder=""
-                                name="password"
-                                aria-describedby="floatingInputHelp"
-                                required
-                        />
-                        <label for="floatingInput">Password</label>
-                    </div>
-                    <button type="submit" name="pass" class="btn btn-primary mt-4">Save</button>
-                </form>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-    </div>
-</div>
-<div class="modal fade" id="add" tabindex="-1" aria-labelledby="addLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-floating mt-2">
+              <input type="text" class="form-control" id="floatingInput" placeholder="" name="password" aria-describedby="floatingInputHelp" required />
+              <label for="floatingInput">Password</label>
             </div>
-            <div class="modal-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="form-floating mt-2">
-                        <input
-                                type="text"
-                                class="form-control"
-                                id="floatingInput"
-                                placeholder=""
-                                name="usernames"
-                                aria-describedby="floatingInputHelp"
-                                required
-                        />
-                        <label for="floatingInput">Username</label>
-                    </div>
-                    <div class="form-floating mt-2">
-                        <input
-                                type="text"
-                                class="form-control"
-                                id="floatingInput"
-                                placeholder=""
-                                name="passwords"
-                                aria-describedby="floatingInputHelp"
-                                required
-                        />
-                        <label for="floatingInput">Password</label>
-                    </div>
-                    <div class="form-floating mt-2">
-                        <input
-                                type="text"
-                                class="form-control"
-                                id="floatingInput"
-                                placeholder=""
-                                name="f_name"
-                                aria-describedby="floatingInputHelp"
-                                required
-                        />
-                        <label for="floatingInput">Name</label>
-                    </div>
-                    <button type="submit" name="addadmin" class="btn btn-primary mt-4">Save</button>
-                </form>
-            </div>
+            <button type="submit" name="pass" class="btn btn-primary mt-4">Save</button>
+          </form>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock %}

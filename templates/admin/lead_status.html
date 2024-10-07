@@ -1,70 +1,47 @@
-{% extends 'admin/common.html' %}
- {% block content %}
-{% if messages %}
-<div class="container-lg "
-     style="background-color:#277da1 ; margin-top: 3em;border-radius: 6px;padding:1em;width:95%">
-
-    <div class="messages">
-        {% for message in messages %}
-
-        <h5 class="text-white pt-3"
-                {% if message.tags %} class="{{ message.tags }}" {% endif %}><strong>{{ message }}</strong>
-        </h5>
-        {% endfor %}
-    </div>
-
-
-</div>
-  {% else %}
+{% extends 'common/admin/common.html' %}
+{% block content %}
 <div class="card" style="margin: 3rem 2rem;">
-    <div class="d-flex justify-content-between">
-                <h4 class="card-header">Lead Status of {{lead.name}}</h4>
-                <h4 class="card-header">Assigned To {{sale}}</h4>
-        {% if calls %}
-                <h4 class="card-header">Call-Back : {{calls.date}}</h4>
-        {% endif %}
+  <div class="d-flex justify-content-between px-4 align-items-center" style="height: 7em;">
+    <h3 class="card-title fw-bold text-black mb-0">Lead Status of {{lead.name}}</h3>
+    <div>
+      {% if sale %}
+    <h6 class="card-header">Employee : {{sale}}</h6>
+    {% endif %}
+    {% if calls %}
+    <h6 class="card-header" style="margin-top: -2em;">Call-Back : {{calls.date}}</h6>
+    {% endif %}
+  </div>
+  </div>
+  {% if lead_status %}
+  <div class="table-responsive text-nowrap">
+    <table class="table text-center table-striped">
+      <thead>
+        <tr>
+          <th>Contacted On</th>
+          <th>Progress</th>
+          <th>Status</th>
+          <th>Notes</th>
+          <th>Probability</th>
+        </tr>
+      </thead>
+      <tbody class="table-border-bottom-0">
+        {% for i in lead_status %}
+        <tr>
+          <td>{{i.contacted_on}}</td>
+          <td>{{i.progress}}</td>
+          <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{i.status}}</strong></td>
+          <td>{{i.notes}}</td>
 
-    </div>
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th>Contacted On</th>
-                          <th>Whatsapp</th>
-                        <th>Progress</th>
-                          <th>Status</th>
-                          <th>Notes</th>
-                         <th>Probability</th>
-                      </tr>
-                    </thead>
-                        <tbody class="table-border-bottom-0">
-                    {% if lead_status %}
-                        {% for i in lead_status %}
-                        <tr>
-                            <td>{{i.last_contacted}}</td>
-                            <td>{{i.watsapp}}</td>
-                        <td>{{i.progress}}</td>
-                            <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{i.status}}</strong></td>
-                          <td>{{i.notes}}</td>
-
-                          <td>{{i.probability}}</td>
-                        </tr>
-                    </tbody>
-                        {% endfor %}{% else %}
-                        <tr>
-                        <td></td>
-                        <td></td>
-                          <td>No Status Available ...</td>
-                            <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>{% endif %}
-                    </table>
-
-
-
-
-              </div>
+          <td>{{i.probability}}</td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+  </div>
+  {% else %}
+  <div style="height: 10em;width: 100%;display: flex;" class="justify-content-center align-items-center">
+    <h4>No Status</h4>
+  </div>
+  {% endif %}
 </div>
-{% endif %}
 {% endblock %}

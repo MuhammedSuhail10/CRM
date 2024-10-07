@@ -1,5 +1,5 @@
-{% extends 'admin/common.html' %}
- {% block content %}
+{% extends 'common/admin/common.html' %}
+{% block content %}
 <div class="card" style="margin: 3rem 2rem;">
         <h5 class="card-header">Edit Leads</h5>
         <form method="post" style="margin: 0 2rem 2rem 2rem;">
@@ -12,7 +12,7 @@
                           placeholder=""
                           name="name"
                           aria-describedby="floatingInputHelp"
-                          value="{{lead.user.first_name}}"
+                          value="{{lead.user.name}}"
                         />
                         <label for="floatingInput">Name</label>
               </div>
@@ -20,13 +20,12 @@
                         <input
                           type="tel"
                           pattern="[0-9]{10}"
-
                           class="form-control"
                           id="floatingInput"
                           placeholder=""
                           name="number"
                           aria-describedby="floatingInputHelp"
-                          value="{{lead.user.username}}"
+                          value="{{lead.user.phone}}"
                         />
                         <label for="floatingInput">Phone Number</label>
               </div>
@@ -38,7 +37,6 @@
                           placeholder=""
                           name="password"
                           aria-describedby="floatingInputHelp"
-                          value="{{lead.password}}"
                         />
                         <label for="floatingInput">Password</label>
               </div>

@@ -1,129 +1,128 @@
-{% extends 'admin/common.html' %}
+{% extends 'common/admin/common.html' %}
 {% block content %}
-<div class="card" style="margin: 3rem 2rem;">
-    <div class="d-flex justify-content-between">
-        <h4 class="card-header">Leads ({{count}})</h4>
-        <div>
-            <div>
-                <a href="{% url 'reset_todays_leads' %}" class="btn btn-success mt-3" id="dailyButton">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                         class="bi bi-x-octagon" viewBox="0 0 16 16">
-                        <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1z"/>
-                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                    </svg>
-                </a>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-      const dailyButton = document.getElementById('dailyButton')
-      const lastClickedDate = localStorage.getItem('lastClickedDate');
-      const today = new Date().toDateString();
-
-      if (lastClickedDate !== today) {
-        // Button has not been clicked today, show it
-        dailyButton.style.display = 'block';
-      } else {
-        // Button has been clicked today, hide it
-        dailyButton.style.display = 'none';
-      }
-
-      // Add click event listener
-      dailyButton.addEventListener('click', function() {
-        // Hide the button
-        this.style.display = 'none';
-
-        // Store the clicked date in local storage
-        localStorage.setItem('lastClickedDate', new Date().toDateString());
-      });
-    });
-
-                </script>
-            </div>
-            <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary mt-3"
-                    style="height:3rem;margin-right:1em;">
-                <svg style="margin-top:-0.2em" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                     fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                </svg>
-                Add Lead
-            </button>
-        </div>
+  <div class="card" style="margin: 3rem 2rem;">
+    <div class="d-flex justify-content-between px-3 align-items-center" style="height: 7em;">
+      <div>
+        <h3 class="card-title fw-bold text-black mb-0">Leads</h3>
+        <p class="text-muted mb-0">
+          Count : <span class="fw-bold">{{ count }}</span>
+        </p>
+      </div>
+      <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary bd-flex align-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+          <defs>
+            <mask id="letsIconsAddRingDuotoneLine0">
+              <g fill="none" stroke-width="1.2">
+                <circle cx="12" cy="12" r="8.4" stroke="#fff" stroke-opacity=".75" />
+                <path stroke="#fff" stroke-linecap="square" d="M12 15V9m3 3H9" />
+              </g>
+            </mask>
+          </defs>
+          <path fill="#fff" d="M0 0h24v24H0z" mask="url(#letsIconsAddRingDuotoneLine0)" />
+        </svg>
+      </button>
     </div>
-    <div class="table-responsive text-nowrap">
-        <table class="table table-striped">
-            <thead>
+    {% if lead %}
+      <div class="table-responsive text-nowrap">
+        <table class="table text   table-striped">
+          <thead class="text-center">
             <tr>
-                <th>Action</th>
-                <th>Name</th>
-                <th>Phone Number</th>
-                <th>Email</th>
-                <th>Lead Status</th>
-                <th>Education</th>
+              <th>Action</th>
+              <th>Name</th>
+              <th>Phone Number</th>
+              <th>Email</th>
+              <th>Lead Status</th>
+              <th>Education</th>
             </tr>
-            </thead>
-            <tbody class="table-border-bottom-0 leads-list">
-            {% if lead %}
+          </thead>
+          <tbody class="table-border-bottom-0 text-center leads-list">
             {% for i in lead %}
-            <tr class="lead">
+              <tr class="lead">
                 <td>
-                    <a href="{% url 'edit_lead' i.id %}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                             class="bi bi-pencil-square" viewBox="0 0 16 16">
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                            <path fill-rule="evenodd"
-                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                        </svg>
-                    </a>
-                    <a href="{% url 'del_lead' i.id %}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" class="bi bi-trash"
-                             viewBox="0 0 16 16">
-                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                        </svg>
-                    </a>
-
+                  <a href="{% url 'edit_lead' i.id %}" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#dee2e6" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                    </svg>
+                  </a>
+                  <a href="{% url 'del_lead' i.id %}" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#dee2e6" class="bi bi-trash" viewBox="0 0 16 16">
+                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                      <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                    </svg>
+                  </a>
                 </td>
-                <td><h5 style="font-size:12pt;margin-top:0.6em"><i class="fab fa-angular fa-lg text-danger mt-3"></i> <strong>{{i.name}}</strong></h5></td>
-                <td><h6>{{i.number}}</h6></td>
-                <td>{{i.email}}</td>
-                <td><a href="{% url 'lead_status' i.id %}"><span class="badge bg-label-primary me-1">Lead Status</span></a>
+                <td>
+                  <h5 style="font-size:12pt;margin-top:0.6em"><i class="fab fa-angular fa-lg text-danger mt-3"></i> <strong>{{ i.name }}</strong></h5>
                 </td>
-                <td>{{i.department}}</td>
-            </tr>
-            {% endfor %}{% else %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>No leads yet ...</td>
-            </tr>
-            {% endif %}
-            </tbody>
+                <td>
+                  <h6>{{ i.phone }}</h6>
+                </td>
+                <td>{{ i.email }}</td>
+                <td>
+                  <a href="{% url 'lead_status' i.id %}"><span class="badge bg-label-primary me-1">Lead Status</span></a>
+                </td>
+                <td>{{ i.department }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
         </table>
-    </div>
-</div>
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      </div>
+    {% else %}
+      <div style="height: 10em;width: 100%;display: flex;" class="justify-content-center align-items-center">
+        <h4>No leads</h4>
+      </div>
+    {% endif %}
+  </div>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Lead</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {% for field in form %}
-                    <p class="custom-class">Upload CSV file {{ field }}</p>
-                    {% endfor %}
-                    <button type="submit" class="btn btn-primary mt-4">Add</button>
-                </form>
-                </form>
-            </div>
-            <div class="modal-footer">
-
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="card-title fw-bold text-black mb-0">Leads</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+          <form id="uploadForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="upload-area" id="dropZone">
+              <div class="upload-icon">&#x1F4C1;</div>
+              <p class="upload-text">Drag & Drop your CSV file here</p>
+              <p class="upload-text">or</p>
+              <button type="button" onclick="document.getElementById('fileInput').click()">Choose File</button>
+              <input type="file" name="file" id="fileInput" class="file-input" accept=".csv" onchange="updateFileName(this)" />
+            </div>
+            <p class="file-name" id="fileName"></p>
+            <button type="submit" class="submit-button">Upload and Process</button>
+          </form>
+        </div>
+        <div class="modal-footer"></div>
+      </div>
     </div>
-</div>
+  </div>
 
+  <script>
+    function updateFileName(input) {
+      const fileName = input.files[0] ? input.files[0].name : 'No file chosen'
+      document.getElementById('fileName').textContent = fileName
+    }
+    
+    const dropZone = document.getElementById('dropZone')
+    const fileInput = document.getElementById('fileInput')
+    
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault()
+      dropZone.style.backgroundColor = '#e6f2ff'
+    })
+    
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.style.backgroundColor = ''
+    })
+    
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault()
+      dropZone.style.backgroundColor = ''
+      fileInput.files = e.dataTransfer.files
+      updateFileName(fileInput)
+    })
+  </script>
 {% endblock %}

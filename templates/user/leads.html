@@ -1,9 +1,12 @@
-{% extends 'user/common.html' %}
+{% extends 'common/user/common.html' %}
 {% load static %}
 {% block content %}
-<div class="container d-flex justify-content-between" id="container_lead" style="margin-top:6em">
-    <h2 style="color: #3d5a80; margin-bottom: 1em;font-weight:600;">New Leads</h2>
-    <div class="d-flex">
+<div class="container d-flex justify-content-between" id="container_lead" style="margin-top:1.5em">
+    <h2 style="color: #495057; margin-bottom: 1em;font-weight:600;">Leads</h2>
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Start typing to search..." id="search-input" onkeyup="search()" />
+        <span class="search-icon" style="margin-top: -0.7em;">&#128269;</span>
+      </div>
         <button type="button" data-bs-toggle="modal"
                 data-bs-target="#exampleModal"
                 class="btn btn-primary" style="height:3em;width:15em">
@@ -13,93 +16,43 @@
                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
             </svg>&nbsp;Add Reference
         </button>
-        <div class="search d-flex justify-content-end">
-            <input type="text" class="searchTerm" placeholder="Search" onkeyup="search()" id="search-input">
-            <button class="searchButton">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-</svg>
-            </button>
-        </div>
-    </div>
 </div>
-<div class="container-lg overflow-auto ">
-    <table class="table table-bordered ">
+{% if duty %}
+<div class="container-lg mt-2 overflow-auto ">
+    <table class="table text-center table-bordered ">
         <thead>
         <tr>
-            <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Sl no</th>
-            <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Name</th>
-            <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Phone No</th>
-            <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Email</th>
-            <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Department</th>
-            <th scope="col" class="p-4" style=" background-color: #52796f;color:#edede9;">Lead Status</th>
+            <th scope="col" class="p-4" style=" background-color: #006d77;color:#edede9;">Sl no</th>
+            <th scope="col" class="p-4" style=" background-color: #006d77;color:#edede9;">Name</th>
+            <th scope="col" class="p-4" style=" background-color: #006d77;color:#edede9;">Phone No</th>
+            <th scope="col" class="p-4" style=" background-color: #006d77;color:#edede9;">Email</th>
+            <th scope="col" class="p-4" style=" background-color: #006d77;color:#edede9;">Department</th>
+            <th scope="col" class="p-4" style=" background-color: #006d77;color:#edede9;">Lead Status</th>
         </tr>
         </thead>
         <tbody class="leads-list">
-        {% if duty %}
         {% for i in duty %}
         <tr class="lead">
             <th scope="row">{{forloop.counter}}</th>
             <td><h5>{{i.lead.name}}</h5></td>
-            <td><h6 style="font-weight:600;">{{i.lead.number}}</h6></td>
+            <td><h6 style="font-weight:600;">{{i.lead.phone}}</h6></td>
             <td>{{i.lead.email}}</td>
             <td>{{i.lead.department}}</td>
-            <td class="d-flex justify-content-center align-items-center"><a href="{% url 'status' i.lead.id %}"
-                                                                            style="text-decoration: none;">
-                <button class="p-2 btn d-flex justify-content-center align-items-center "
-                        style="width: auto; height: 30px; background-color:#52796f; color: white; border-radius: 5px;">
-                    view
-                </button>
+            <td class="d-flex justify-content-center align-items-center"><a class="p-3 btn d-flex justify-content-center align-items-center " href="{% url 'status' i.lead.id %}"
+                style="width: auto; height: 30px; background-color:#006d77; color: white; border-radius: 5px;">
+                    View
             </a></td>
         </tr>
         {% endfor %}
-        {% else %}
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>No leads yet ...</td>
-        </tr>
-        {% endif %}
         </tbody>
     </table>
 </div>
-<script>
-        const search = () => {
-            const searchInput = document.getElementById("search-input").value.toUpperCase();
-            console.log(searchInput)
-            const items = document.getElementsByClassName("leads-list")
-            const product = document.querySelectorAll(".lead")
-            const names = document.getElementsByTagName("h5")
-            const numbers = document.getElementsByTagName("h6")
-            if (!isNaN(searchInput)) {
-            for (let i = 0; i < numbers.length; i++) {
-                let match = product[i].getElementsByTagName('h6')[0];
-                if (match) {
-                    let tvalue = match.textContent || match.innerHTML
-                    if (tvalue.toUpperCase().indexOf(searchInput) > -1) {
-                        product[i].style.display = "";
-                    } else {
-                        product[i].style.display = "none";
-                    }
-                }
-            }
-            }
-            else{
-            for (let i = 0; i < names.length; i++) {
-                let match = product[i].getElementsByTagName('h5')[0];
-                if (match) {
-                    let tvalue = match.textContent || match.innerHTML
-                    if (tvalue.toUpperCase().indexOf(searchInput) > -1) {
-                        product[i].style.display = "";
-                    } else {
-                        product[i].style.display = "none";
-                    }
-                }
-            }
-            }
-        }
-</script>
+{% else %}
+    <div style="height: 10em;width: 100%;display: flex;" class="justify-content-center align-items-center">
+      <h4>No Leads</h4>
+    </div>
+    {% endif %}
+
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -1,223 +1,200 @@
-{% extends 'admin/common.html' %}
+{% extends 'common/admin/common.html' %}
 {% block content %}
-<div class="card" style="margin: 3rem 2rem;">
-    <div class="d-flex justify-content-between">
-        <h4 class="card-header" onclick="showdtar()" style="cursor:pointer;">Daily Quality of {{person1}}</h4>
-        <button type="button" data-bs-toggle="modal" data-bs-target="#daily" class="btn btn-primary mt-3" style="height:3rem;margin-right:1em;margin-left:0.3em;"><svg style="margin-top:-0.2em" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
-  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-</svg>Add / Edit Quality</button>
-    </div>
-    <div class="table-responsive text-nowrap" id="dtar">
-        <table class="table table-striped">
+  <div style="min-height: 80dvh;">
+    <div class="card" style="margin: 3rem 2rem;">
+      <div class="d-flex justify-content-between px-3 align-items-center" style="height: 7em;">
+        <h3 class="card-title fw-bold text-black mb-0">Leads Assigned</h3>
+      </div>
+      {% if duty %}
+        <div class="table-responsive text-nowrap">
+          <table class="table table-striped">
             <thead>
-            <tr>
-                <th>Date</th>
-                <th>Total Quality</th>
-                <th>Quality Completed</th>
-                <th>Quality Uncompleted</th>
-            </tr>
-            </thead>
-            <tbody class="table-border-bottom-0">
-            {% if daily %}
-            {% for i in daily %}
-            <tr>
-                <td>{{ i.date }}</td>
-                <td>{{i.target}}</td>
-                <td>{{ i.target_won }}</td>
-                <td>{{ i.target_remaining }}</td>
-            </tr>
-            {% endfor %}
-            {% else %}
-                    <tr>
-                        <td></td>
-                        <td></td>
-                          <td>No quantities yet ...</td>
-                    </tr>{% endif %}
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="card" style="margin: 3rem 2rem;">
-    <div class="d-flex justify-content-between">
-        <h4 class="card-header" onclick="showmtar()" style="cursor:pointer;">Monthly Target of {{person1}}</h4>
-        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary mt-3" style="height:3rem;margin-right:1em;margin-left:0.3em;"><svg style="margin-top:-0.2em" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
-  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-</svg>Add / Edit Target</button>
-    </div>
-    <div class="table-responsive text-nowrap" id="mtar" style="display:none;">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Month</th>
-                <th>Total Target</th>
-                <th>Target Completed</th>
-                <th>Target Remaining</th>
-            </tr>
-            </thead>
-            <tbody class="table-border-bottom-0">
-            {% if data %}
-            {% for i in data %}
-            <tr>
-                <td>{{ i.month }}</td>
-                <td>{{i.target}}</td>
-                <td>{{ i.target_won }}</td>
-                <td>{{ i.target_remaining }}</td>
-            </tr>
-            {% endfor %}
-            {% else %}
-                    <tr>
-                        <td></td>
-                        <td></td>
-                          <td>No targets yet ...</td>
-                    </tr>{% endif %}
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="card" style="margin: 3rem 2rem;">
-    <div class="d-flex justify-content-between">
-        <h4 class="card-header" onclick="showduty()" style="cursor:pointer;">Duties Assigned to {{person1}}</h4>
-    </div>
-    <div class="table-responsive text-nowrap" id="duty" style="display:none;">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Lead</th>
+              <tr>
+                <th>Phone</th>
                 <th>Name</th>
                 <th>Lead Assigned On</th>
                 <th>Lead Last Date</th>
                 <th>Lead Status</th>
                 <th>Actions</th>
-            </tr>
+              </tr>
             </thead>
             <tbody class="table-border-bottom-0 leads-list">
-            {% if duty %}
-            {% for i in duty %}
-            <tr class="lead">
-                <td><h6>{{i.lead.number}}</h6></td>
-                <td><h5 style="font-size:12pt;margin-top:0.6em">{{i.lead.name}}</h5></td>
-                <td>{{i.created_on}}</td>
-                <td>{{i.delete_date}}</td>
-                <td><a href="{% url 'lead_status' i.lead.id %}"><span
-                        class="badge bg-label-primary me-1">Lead Status</span></a></td>
+              {% for i in duty %}
+                <tr class="lead">
+                  <td>
+                    <h6>{{ i.lead.number }}</h6>
+                  </td>
+                  <td>
+                    <h5 style="font-size:12pt;margin-top:0.6em">{{ i.lead.name }}</h5>
+                  </td>
+                  <td>{{ i.created_on }}</td>
+                  <td>{{ i.delete_date }}</td>
+                  <td>
+                    <a href="{% url 'lead_status' i.lead.id %}"><span class="badge bg-label-primary me-1">Lead Status</span></a>
+                  </td>
 
-                <td>
+                  <td>
                     <a href="{% url 'del_duty' i.id %}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" class="bi bi-trash"
-                             viewBox="0 0 16 16">
-                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                        </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                      </svg>
                     </a>
-
-                </td>
-            </tr>
-            {% endfor %}
-            {% else %}
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                          <td>No duties assigned yet ...</td>
-                        <td></td>
-                        <td></td>
-                    </tr>{% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
             </tbody>
-        </table>
+          </table>
+        </div>
+      {% else %}
+        <div style="height: 10em;width: 100%;display: flex;" class="justify-content-center align-items-center">
+          <h4>No leads assigned</h4>
+        </div>
+      {% endif %}
     </div>
-</div>
-<div class="modal fade" id="daily" tabindex="-1" aria-labelledby="dailyLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="dailyLabel">Add Target</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="d-flex justify-content-around mb-4">
+      <div class="card">
+        <div class="d-flex justify-content-between px-3 align-items-center" style="height: 7em;">
+          <div>
+            <h3 class="card-title fw-bold text-black mb-0">Daily Quality</h3>
+          </div>
+          <button type="button" data-bs-toggle="modal" data-bs-target="#daily" class="btn btn-primary bd-flex align-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+              <defs>
+                <mask id="letsIconsAddRingDuotoneLine0">
+                  <g fill="none" stroke-width="1.2">
+                    <circle cx="12" cy="12" r="8.4" stroke="#fff" stroke-opacity=".75" />
+                    <path stroke="#fff" stroke-linecap="square" d="M12 15V9m3 3H9" />
+                  </g>
+                </mask>
+              </defs>
+              <path fill="#fff" d="M0 0h24v24H0z" mask="url(#letsIconsAddRingDuotoneLine0)" />
+            </svg>
+          </button>
+        </div>
+        {% if daily %}
+        <div class="table-responsive text-nowrap">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Total Quality</th>
+                <th>Quality Completed</th>
+                <th>Quality Uncompleted</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                {% for i in daily %}
+                  <tr>
+                    <td>{{ i.date }}</td>
+                    <td>{{ i.target }}</td>
+                    <td>{{ i.target_won }}</td>
+                    <td>{{ i.target_remaining }}</td>
+                  </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div style="height: 10em;width: 100%;display: flex;" class="justify-content-center align-items-center">
+          <h4>No Employees</h4>
+        </div>
+        {% endif %}
       </div>
-      <div class="modal-body">
-          <form method="post">
-        {% csrf_token %}
-              <input
-                          type="hidden"
-                          class="form-control"
-                          id="floatingInput"
-                          placeholder=""
-                          name="user"
-                          aria-describedby="floatingInputHelp"
-                          value="{{person1.id}}"
-                        />
+
+      <div class="card">
+        <div class="d-flex justify-content-between px-3 align-items-center" style="height: 7em;">
+          <div>
+            <h3 class="card-title fw-bold text-black mb-0">Monthly Quality</h3>
+          </div>
+          <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary bd-flex align-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+              <defs>
+                <mask id="letsIconsAddRingDuotoneLine0">
+                  <g fill="none" stroke-width="1.2">
+                    <circle cx="12" cy="12" r="8.4" stroke="#fff" stroke-opacity=".75" />
+                    <path stroke="#fff" stroke-linecap="square" d="M12 15V9m3 3H9" />
+                  </g>
+                </mask>
+              </defs>
+              <path fill="#fff" d="M0 0h24v24H0z" mask="url(#letsIconsAddRingDuotoneLine0)" />
+            </svg>
+          </button>
+        </div>
+        {% if data %}
+        <div class="table-responsive text-nowrap">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Total Target</th>
+                <th>Target Completed</th>
+                <th>Target Remaining</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                {% for i in data %}
+                  <tr>
+                    <td>{{ i.month }}</td>
+                    <td>{{ i.target }}</td>
+                    <td>{{ i.target_won }}</td>
+                    <td>{{ i.target_remaining }}</td>
+                  </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div style="height: 10em;width: 100%;display: flex;" class="justify-content-center align-items-center">
+          <h4>No Employees</h4>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+
+    {% comment %} Modals {% endcomment %}
+    <div class="modal fade" id="daily" tabindex="-1" aria-labelledby="dailyLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="card-title fw-bold text-black mb-0">Daily Target</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="post" action={% url "daily" %}>
+              {% csrf_token %}
+              <input type="hidden" class="form-control" id="floatingInput" placeholder="" name="user" aria-describedby="floatingInputHelp" value="{{ person1.id }}" />
               <div class="form-floating mt-2">
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="floatingInput"
-                          placeholder=""
-                          name="qualities"
-                          aria-describedby="floatingInputHelp"
-                        />
-                        <label for="floatingInput">Quality</label>
+                <input type="text" class="form-control" id="floatingInput" placeholder="" name="qualities" aria-describedby="floatingInputHelp" />
+                <label for="floatingInput">Quality</label>
               </div>
               <button name="quality" type="submit" class="btn btn-primary mt-4">Add</button>
-          </form>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Add Target</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <form method="post">
-        {% csrf_token %}
-              <input
-                          type="hidden"
-                          class="form-control"
-                          id="floatingInput"
-                          placeholder=""
-                          name="user"
-                          aria-describedby="floatingInputHelp"
-                          value="{{person1.id}}"
-                        />
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="card-title fw-bold text-black mb-0">Monthly Target</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form  method="post" action={% url "monthly" %}>
+              {% csrf_token %}
+              <input type="hidden" class="form-control" id="floatingInput" placeholder="" name="user" aria-describedby="floatingInputHelp" value="{{ person1.id }}" />
               <div class="form-floating mt-2">
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="floatingInput"
-                          placeholder=""
-                          name="target"
-                          aria-describedby="floatingInputHelp"
-                        />
-                        <label for="floatingInput">Target</label>
+                <input type="text" class="form-control" id="floatingInput" placeholder="" name="target" aria-describedby="floatingInputHelp" />
+                <label for="floatingInput">Target</label>
               </div>
               <button name="targets" type="submit" class="btn btn-primary mt-4">Add</button>
-          </form>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<script>
-     let x= document.getElementById("mtar");
-     let y= document.getElementById("dtar");
-     let z= document.getElementById("duty");
-     function showdtar(){
-    z.style.display = "none"
-    x.style.display = "none"
-    y.style.display = "block"
-    }
-    function showmtar(){
-    z.style.display = "none"
-    y.style.display = "none"
-    x.style.display = "block"
-    }
-    function showduty(){
-    z.style.display = "block"
-    y.style.display = "none"
-    x.style.display = "none"
-    }
-</script>
 {% endblock %}

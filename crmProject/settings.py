@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crmAdmin',
+    'crmuser',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +60,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'crmProject.wsgi.application'
+AUTH_USER_MODEL = 'user.UserInfo'
 
 
 # Database

@@ -1,52 +1,46 @@
-{% extends 'admin/common.html' %}
+{% extends 'common/admin/common.html' %}
 {% block content %}
-<div class="card" style="margin: 3rem 2rem;">
-    <div class="d-flex justify-content-between">
-        <h4 class="card-header">Follow Ups</h4>
-
+  <div class="card" style="margin: 3rem 2rem;">
+    <div class="d-flex justify-content-between px-3 align-items-center" style="height: 7em;">
+      <h3 class="card-title fw-bold text-black mb-0">Follow Ups</h3>
     </div>
-    <div class="table-responsive text-nowrap">
-        <table class="table table-striped">
-            <thead>
+    {% if duty %}
+      <div class="table-responsive text-nowrap">
+        <table class="table text-center table-striped">
+          <thead>
             <tr>
-                <th>Lead</th>
-                <th>Number</th>
-                <th>Status</th>
-                <th>Course</th>
-                <th>Notes</th>
-                <th>Action</th>
+              <th>Lead</th>
+              <th>Number</th>
+              <th>Status</th>
+              <th>Course</th>
+              <th>Notes</th>
+              <th>Action</th>
             </tr>
-            </thead>
-            <tbody class="table-border-bottom-0 leads-list">
-            {% if duty %}
+          </thead>
+          <tbody class="table-border-bottom-0 leads-list">
             {% for i in duty %}
-            <tr class="lead">
-                <td><h5>{{i.leed.name}}</h5></td>
-                <td><h6>{{i.leed.number}}</h6></td>
-                <td>{{i.status}} : {{i.progress}}</td>
-                <td>{{i.course}}</td>
-                <td>{{i.notes}}</td>
-                <td class="d-flex justify-content-center align-items-center" style="height:4em"><a href="{% url 'lead_status' i.leed.id %}"
-                                                                                style="text-decoration: none;">
-                    <button class="p-2 btn d-flex justify-content-center align-items-center "
-                            style="width: auto; height: 30px; background-color:#52796f; color: white; border-radius: 5px;">
-                        view
-                    </button>
-                </a></td>
-            </tr>
+              <tr class="lead">
+                <td>
+                  <h5>{{ i.lead.name }}</h5>
+                </td>
+                <td>
+                  <h6>{{ i.lead.phone }}</h6>
+                </td>
+                <td>{{ i.status }} : {{ i.progress }}</td>
+                <td>{{ i.course }}</td>
+                <td>{{ i.notes }}</td>
+                <td style="height:4em">
+                  <a href="{% url 'lead_status' i.lead.id %}" class="btn btn-primary">view</a>
+                </td>
+              </tr>
             {% endfor %}
-            {% else %}
-            <tr>
-                <td>No Duty To Assign</td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            {% endif %}
-
-            </tbody>
+          </tbody>
         </table>
-    </div>
-</div>
-
+      </div>
+    {% else %}
+      <div style="height: 10em;width: 100%;display: flex;" class="justify-content-center align-items-center">
+        <h4>No Follow ups</h4>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}
