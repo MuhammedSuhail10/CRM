@@ -47,7 +47,7 @@ class Course(models.Model):
 
 # Leads
 class Lead(models.Model):
-    admin = models.ForeignKey(UserInfo,on_delete=models.CASCADE, null=True, blank=True)
+    admin = models.ForeignKey(UserInfo, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
     whatsapp = models.CharField(max_length=100, null=True, blank=True)

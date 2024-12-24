@@ -36,57 +36,32 @@ class FacebookLeadAds:
             return False
 
         lead_data = lead.get("field_data", None)
-
         for data in lead_data:
             print(data)
             if data.get("name", None) in ["e-mail", "email"]:
                 email = data.get("values")[0]
                 return email.strip().lower()
-
         return False
 
 @csrf_exempt
 def facebook_webhook(request):
     if request.method == 'GET':
         verify_token = request.GET.get("hub.verify_token", "")
-        
-        if verify_token != "EMERGIO_WEBHOOK_LEADS":
-            return HttpResponseForbidden("Wrong verification token")
-        
-        challenge = request.GET.get("hub.challenge", 0)
-        
-        try:
+        if verify_token == "EMERGIO_WEBHOOK_LEADS":
+            challenge = request.GET.get("hub.challenge", 0)
             return HttpResponse(int(challenge))
-        except ValueError:
-            return HttpResponseForbidden("Invalid challenge")
-    
+        return HttpResponseForbidden("Wrong verification token")
+
     elif request.method == 'POST':
         entry = request.POST.get("entry", None)
-
         for data in entry:
             changes = data["changes"]
             for change in changes:
                 leadgen_id = change["value"]["leadgen_id"]
-
                 lead_email = FacebookLeadAds().get_lead_email(leadgen_id)
                 if not lead_email:
-                    return JsonResponse({"success": False})
-
-        return JsonResponse({"success": True})
-
-def facebook_webhook(request):
-    if request.method == 'GET':
-        verify_token = request.GET.get("hub.verify_token", "")
-        
-        if verify_token != "EMERGIO_WEBHOOK_LEADS":
-            return HttpResponseForbidden("Wrong verification token")
-        
-        challenge = request.GET.get("hub.challenge", 0)
-        
-        try:
-            return HttpResponse(int(challenge))
-        except ValueError:
-            return HttpResponseForbidden("Invalid challenge")
+                    return HttpResponse({"success": False})
+        return HttpResponse({"success": True})
 
 # Dashboard
 @login_required(login_url='login')
@@ -188,7 +163,6 @@ def employee(request):
             return redirect('admin_employee')
         return render(request, "admin/salespersons.html", {'person': emp,'count':count})
     return redirect('login')
-
 
 # View Employees
 @login_required(login_url='login')
