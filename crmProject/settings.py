@@ -17,6 +17,10 @@ DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='').split(',')
 
+FACEBOOK_APP_ID = config('FACEBOOK_APP_ID')
+FACEBOOK_APP_SECRET = config('FACEBOOK_APP_SECRET')
+FACEBOOK_ACCESS_TOKEN = config('FACEBOOK_ACCESS_TOKEN')
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

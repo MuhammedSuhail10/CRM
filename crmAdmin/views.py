@@ -20,9 +20,9 @@ from facebook_business.exceptions import FacebookRequestError
 from django.views.decorators.csrf import csrf_exempt
 
 class FacebookLeadAds:
-    access_token = "EAAQE0sBYG6@B08orJvojufIJOOmv2X6foHRLQoAyISriuXtZBkZCUZBYJ8MeZCnNRr8WEKyZC7CvvqjCjgIea@RoYA3@UDXuwHBmTn GQeZCe97XLn9cs9cZA3u@Js0j0tGrBUh0QurgpIBjshSIotRq83Pz6@SUGgCa@zkqpnFP1U9itaD@PIIu@jjFordHENI0zJ4xweMeGr tzRAEuHkQbvTYb"
-    app_secret = "9ff88aa5d21c1a8fe38e443c42ea30ed"
-    app_id = "1130550288456621"
+    access_token = settings.FACEBOOK_ACCESS_TOKEN
+    app_secret = settings.FACEBOOK_APP_SECRET
+    app_id = settings.FACEBOOK_APP_ID
 
     def __init__(self):
         FacebookAdsApi.init(
