@@ -10,6 +10,83 @@ from .utils.csv_lead import *
 from .utils.assign_utils import *
 import calendar
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseForbidden
+
+from django.conf import settings
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from facebook_business.api import FacebookAdsApi
+from facebook_business.adobjects.lead import Lead
+from facebook_business.exceptions import FacebookRequestError
+from django.views.decorators.csrf import csrf_exempt
+
+class FacebookLeadAds:
+    access_token = "EAAQE0sBYG6@B08orJvojufIJOOmv2X6foHRLQoAyISriuXtZBkZCUZBYJ8MeZCnNRr8WEKyZC7CvvqjCjgIea@RoYA3@UDXuwHBmTn GQeZCe97XLn9cs9cZA3u@Js0j0tGrBUh0QurgpIBjshSIotRq83Pz6@SUGgCa@zkqpnFP1U9itaD@PIIu@jjFordHENI0zJ4xweMeGr tzRAEuHkQbvTYb"
+    app_secret = "9ff88aa5d21c1a8fe38e443c42ea30ed"
+    app_id = "1130550288456621"
+
+    def __init__(self):
+        FacebookAdsApi.init(
+            access_token=self.access_token, app_secret=self.app_secret, app_id=self.app_id
+        )
+
+    def get_lead_email(self, lead_id):
+        try:
+            lead = Lead(lead_id).api_get()
+        except FacebookRequestError as e:
+            return False
+
+        lead_data = lead.get("field_data", None)
+
+        for data in lead_data:
+            print(data)
+            if data.get("name", None) in ["e-mail", "email"]:
+                email = data.get("values")[0]
+                return email.strip().lower()
+
+        return False
+
+@csrf_exempt
+def facebook_webhook(request):
+    if request.method == 'GET':
+        verify_token = request.GET.get("hub.verify_token", "")
+        
+        if verify_token != "EMERGIO_WEBHOOK_LEADS":
+            return HttpResponseForbidden("Wrong verification token")
+        
+        challenge = request.GET.get("hub.challenge", 0)
+        
+        try:
+            return HttpResponse(int(challenge))
+        except ValueError:
+            return HttpResponseForbidden("Invalid challenge")
+    
+    elif request.method == 'POST':
+        entry = request.POST.get("entry", None)
+
+        for data in entry:
+            changes = data["changes"]
+            for change in changes:
+                leadgen_id = change["value"]["leadgen_id"]
+
+                lead_email = FacebookLeadAds().get_lead_email(leadgen_id)
+                if not lead_email:
+                    return JsonResponse({"success": False})
+
+        return JsonResponse({"success": True})
+
+def facebook_webhook(request):
+    if request.method == 'GET':
+        verify_token = request.GET.get("hub.verify_token", "")
+        
+        if verify_token != "EMERGIO_WEBHOOK_LEADS":
+            return HttpResponseForbidden("Wrong verification token")
+        
+        challenge = request.GET.get("hub.challenge", 0)
+        
+        try:
+            return HttpResponse(int(challenge))
+        except ValueError:
+            return HttpResponseForbidden("Invalid challenge")
 
 # Dashboard
 @login_required(login_url='login')
@@ -20,7 +97,7 @@ def dash(request):
         courses = Course.objects.all()[:4]
         payments = Payment.objects.all()[:4]
         callbacks = Callback.objects.all().order_by('date')[:4]
-        leads_won  = Won.objects.annotate(month=ExtractMonth("won_on")).values("month").annotate(count=Count("id")).values("month", "count")[:3]
+        leads_won  = Won.objects.filter(lead__admin = request.user).annotate(month=ExtractMonth("won_on")).values("month").annotate(count=Count("id")).values("month", "count")[:3]
         return render(request,'admin/dashboard.html',{'lead':lead,'sale':sale,'course':courses,'payment':payments,'callback':callbacks,'won':leads_won})
     return redirect('login')
 
@@ -94,7 +171,7 @@ def employee(request):
             strength = request.POST.get('strength')
             type = "employee"
             if UserInfo.objects.filter(phone=phone).exists():
-                return redirect('employee')
+                return redirect('admin_employee')
             user = UserInfo.objects.create(phone=phone,name=name,email=email,type=type)
             user.set_password(password)
             user.save()
@@ -108,7 +185,7 @@ def employee(request):
             target = Target(sale=Employee.objects.get(user = user), type = "Daily", target = request.POST.get('daily_tar'), target_remaining = request.POST.get('daily_tar'),
                         target_won = 0, date=timezone.now())
             target.save()
-            return redirect('employee')
+            return redirect('admin_employee')
         return render(request, "admin/salespersons.html", {'person': emp,'count':count})
     return redirect('login')
 
@@ -137,7 +214,7 @@ def edit_emp(request,id):
                 user.set_password(request.POST.get('password'))
             user.save()
             lead.save()
-            return redirect('employee')
+            return redirect('admin_employee')
         return render(request, "admin/edit_sales.html", {'lead': lead})
     return redirect('login')
 
@@ -148,7 +225,7 @@ def del_emp(request,id):
         emp = Employee.objects.get(id=id)
         user=UserInfo.objects.get(id=emp.user.id)
         user.delete()
-        return redirect('employee')
+        return redirect('admin_employee')
     return redirect('login')
 
 # Duty
@@ -156,9 +233,9 @@ def del_emp(request,id):
 def duty(request,id):
     if request.user.type == "admin" and not request.user.block:
         person1 = Employee.objects.get(id=id)
-        duty = Duty.objects.filter(emp=person1)
-        target = Target.objects.filter(sale=person1,type="Monthly").annotate(month=ExtractMonth("date")).values("month").annotate(target_won=Sum('target_won'),target=Sum('target'),target_remaining=F('target') - F('target_won')).values("month", "target_won","target","target_remaining")
-        daily = Target.objects.filter(sale=person1,type="Daily").annotate(month=ExtractMonth("date")).values('month').annotate(target_won=Sum('target_won'),target=Sum('target'),target_remaining=F('target') - F('target_won')).values("date", "target_won","target","target_remaining")
+        duty = Duty.objects.filter(emp=person1).order_by('-id')
+        target = Target.objects.filter(sale=person1,type="Monthly").order_by('-id').annotate(month=ExtractMonth("date")).values("month").annotate(target_won=Sum('target_won'),target=Sum('target'),target_remaining=F('target') - F('target_won')).values("month", "target_won","target","target_remaining")
+        daily = Target.objects.filter(sale=person1,type="Daily").order_by('-id').annotate(month=ExtractMonth("date")).values('month').annotate(target_won=Sum('target_won'),target=Sum('target'),target_remaining=F('target') - F('target_won')).values("date", "target_won","target","target_remaining")
 
         if 'quality' in request.POST:
             date = datetime.now().month
@@ -181,8 +258,8 @@ def duty(request,id):
 @login_required(login_url='login')
 def daily(request):
     person1 = Employee.objects.get(id=request.POST.get('user'))
-    current_month = datetime.now().month
-    targets = Target.objects.filter(sale=person1,date__month=current_month,type="Daily")
+    current_month = datetime.now().date()
+    targets = Target.objects.filter(sale=person1,date=current_month,type="Daily")
     if targets.exists():
         for i in targets:
             i.target = request.POST.get('qualities')
@@ -200,16 +277,14 @@ def daily(request):
 def monthly(request):
     person1 = Employee.objects.get(id=request.POST.get('user'))
     current_month = datetime.now().month
-    targets = Target.objects.filter(sale=person1,date__month=current_month,type="Monthly")
-    if targets.exists():
-        for i in targets:
-            i.target = request.POST.get('target')
-            i.target_remaining = int(i.target) - int(i.target_won)
-            i.save()
+    if Target.objects.filter(sale=person1,date__month=current_month,type="Monthly").exists():
+        targets = Target.objects.get(sale=person1,date__month=current_month,type="Monthly")
+        targets.target = request.POST.get('target')
+        targets.target_remaining = int(i.target) - int(i.target_won)
+        targets.save()
     else:
         target = request.POST.get('target')
-        target_won = 0
-        target = Target(sale=person1,target=target,target_remaining=target,target_won=target_won,date=timezone.now(),type="Monthly")
+        target = Target(sale=person1,target=target,target_remaining=target,target_won=0,date=timezone.now(),type="Monthly")
         target.save()
     return redirect('duty',id=request.POST.get('user'))
 
@@ -219,31 +294,43 @@ def del_duty(request,id):
     if request.user.type == "admin" and not request.user.block:
         duty = Duty.objects.get(id=id)
         duty.delete()
-        return redirect('employee')
+        return redirect('admin_employee')
     return redirect('login')
 
 # Assignable Leads
 @login_required(login_url='login')
 def assign(request):
     if request.user.type == "admin" and not request.user.block:
-        assign = Lead.objects.filter(admin=request.user,assign_status=False, trash=False)
+        assign = Lead.objects.filter(admin=request.user, assign_status=False, trash=False)
         count = Lead.objects.filter(admin=request.user, assign_status=False, trash=False).count()
-        return render(request,"admin/assign_duty.html",{'assign':assign,'count':count})
+        emp = Employee.objects.filter(admin=request.user, strength__gt=0)
+        return render(request,"admin/assign_duty.html",{'assign':assign, 'count':count, 'emp':emp})
     return redirect('login')
 
 # Assign
 @login_required(login_url='login')
 def assign_lead(request,id):
     lead = Lead.objects.get(id=id)
-    assign_leads(lead)
-    return redirect('assign')
+    if request.method == "POST":
+        employee = Employee.objects.get(id=request.POST.get('employee_id'))
+        duty = Duty.objects.create(lead=lead,emp=employee,delete_date=(timezone.now().date() + timedelta(days=1)))
+        duty.save()
+        employee.todays_lead += 1
+        employee.total_lead += 1
+        employee.save()
+        lead.assign_status = True
+        lead.save()
+        return redirect('assign')
 
 # Assign All
 @login_required(login_url='login')
 def assign_all_lead(request):
     if request.user.type == "admin" and not request.user.block:
-        lead = Lead.objects.filter(admin = request.user,assign_status = False, trash=False)
+        lead = Lead.objects.filter(admin = request.user, assign_status = False, trash=False, lead_status=False)
         for i in lead:
+            assign_leads(i)
+        other_leads = Lead.objects.filter(admin = request.user, assign_status = False, trash=False)
+        for i in other_leads:
             assign_leads(i)
         return redirect('assign')
     return redirect('login')
@@ -271,7 +358,7 @@ def courses(request):
 
 # Edit Courses
 @login_required(login_url='login')
-def edit_course(request,id):
+def edit_course(request, id):
     if request.user.type == "admin" and not request.user.block:
         courses=Course.objects.get(id=id)
         if request.method == 'POST':
@@ -291,7 +378,7 @@ def edit_course(request,id):
 
 # Delete Course
 @login_required(login_url='login')
-def del_course(request,id):
+def del_course(request, id):
     if request.user.type == "admin" and not request.user.block:
         courses = Course.objects.get(id=id)
         courses.delete()
@@ -302,7 +389,7 @@ def del_course(request,id):
 @login_required(login_url='login')
 def followup(request):
     if request.user.type == "admin" and not request.user.block:
-        duty = Duty.objects.filter(lead__lead_status=True).order_by('-created_on')
+        duty = Duty.objects.filter(lead__lead_status=True, lead__admin=request.user).order_by('-created_on')
         list =[]
         for i in duty:
             leads = Leadstatus.objects.filter(lead=i.lead).last()
@@ -315,7 +402,7 @@ def followup(request):
 @login_required(login_url='login')
 def payments(request):
     if request.user.type == "admin" and not request.user.block:
-        payment = Payment.objects.all()
+        payment = Payment.objects.filter(lead__admin=request.user)
         return render(request,"admin/payment.html",{'payments':payment})
     return redirect('login')
 
@@ -323,7 +410,7 @@ def payments(request):
 @login_required(login_url='login')
 def callbacks(request):
     if request.user.type == "admin" and not request.user.block:
-        calls = Callback.objects.all()
+        calls = Callback.objects.filter(duty__lead__admin=request.user)
         return render(request,"admin/callback.html",{'calls':calls})
     return redirect('login')
 
@@ -331,7 +418,7 @@ def callbacks(request):
 @login_required(login_url='login')
 def won(request):
     if request.user.type == "admin" and not request.user.block:
-        won = Won.objects.all()
+        won = Won.objects.filter(lead__admin = request.user).order_by('-id')
         return render(request, "admin/leads_won.html",{'won':won})
     return redirect('login')
 
@@ -364,17 +451,18 @@ def del_suser(request,id):
 @login_required(login_url='login')
 def reports(request):
     if request.user.type == "admin" and not request.user.block:
-        report = Report.objects.filter(name='followup')
-        won = Report.objects.filter(name='monthlywon')
-        followup = Report.objects.filter(name='monthlyfollowup')
-        return render(request, 'admin/reports.html',{'report':report,'won':won,'followup':followup})
+        report = Report.objects.filter(name='followup', admin=request.user)
+        won = Report.objects.filter(name='monthly_won', admin=request.user)
+        followup = Report.objects.filter(name='monthly_followup', admin=request.user)
+        sr = SaleReport.objects.filter(emp__admin=request.user, date=datetime.now().date())
+        return render(request, 'admin/reports.html',{'report':report,'won':won,'followup':followup, "sr":sr})
     return redirect('login')
 
 # Not Answered Leads
 @login_required(login_url='login')
 def not_answered(request):
     if request.user.type == "admin" and not request.user.block:
-        assign = TrashLead.objects.filter(lost=False)
+        assign = TrashLead.objects.filter(lead__admin=request.user ,lost=False)
         return render(request, 'admin/notanswer.html',{'assign':assign})
     return redirect('login')
 
@@ -382,11 +470,11 @@ def not_answered(request):
 @login_required(login_url='login')
 def trash_leads(request):
     if request.user.type == "admin" and not request.user.block:
-        assign = TrashLead.objects.filter(lost=True)
+        assign = TrashLead.objects.filter(lead__admin = request.user ,lost=True)
         return render(request, 'admin/trash.html',{'assign':assign})
     return redirect('login')
 
-# Trash Leads
+# Recovver Trash Leads
 @login_required(login_url='login')
 def recover_lead(request,id):
     if request.user.type == "admin" and not request.user.block:
@@ -400,3 +488,6 @@ def recover_lead(request,id):
 
 def get_month_name(month_number):
     return calendar.month_name[month_number]
+
+def privacy(request):
+    return render(request, 'privacypolicy.html')

@@ -3,12 +3,19 @@ from django.dispatch import receiver
 from .models import *
 from datetime import datetime
 
+# Update sale report when Duty is created
+# @receiver(post_save, sender=Duty)
+# def save_handler(sender, created, instance, **kwargs):
+#     if created:
+#         report = SaleReport.objects.get(date=datetime.now(), emp=instance.emp)
+#         report.total += 1
+#         report.save()
+
 # Update Employers Details when Employee (Model) is deleted
 @receiver(pre_delete, sender=Employee)
 def before_delete_handler(sender, instance, **kwargs):
     if Duty.objects.filter(emp=instance).exists():
-        duty = Duty.objects.get(emp=instance)
-        duty.delete()
+        Duty.objects.filter(emp=instance).delete()
 
 # Update Employers Details and Lead Details when Duty (Model) is deleted
 @receiver(pre_delete, sender=Duty)

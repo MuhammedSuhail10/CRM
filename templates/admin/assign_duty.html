@@ -8,7 +8,7 @@
           Count : <span class="fw-bold">{{ count }}</span>
         </p>
       </div>
-      <a href="{% url "assign_all" %}" class="btn btn-primary bd-flex align-items-center">Assign All</a>
+      <a href="{% url 'assign_all' %}" class="btn btn-primary bd-flex align-items-center">Assign All</a>
     </div>
     {% if assign %}
       <div class="table-responsive text-nowrap">
@@ -30,7 +30,22 @@
                   <h6>{{ i.phone }}</h6>
                 </td>
                 <td>
-                  <a href="{% url 'assign_lead' i.id %}" class="btn btn-primary">Assign</a>
+                  <form action="{% url 'assign_lead' i.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="employeeSelect" class="form-label">Select an Employee</label>
+                      <div class="input-group">
+                        <select class="form-select" id="employeeSelect" name="employee_id" required aria-label="Select an employee">
+                          <option value="" selected disabled>Choose an employee...</option>
+                          {% for employee in emp %}
+                            <option value="{{ employee.id }}">{{ employee.user.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="form-text">Select an available employee to assign the lead.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                  </form>
                 </td>
               </tr>
             {% endfor %}

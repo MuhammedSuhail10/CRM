@@ -9,6 +9,7 @@
         <table class="table text-center table-striped">
           <thead>
             <tr>
+              <th>Sr</th>
               <th>Lead</th>
               <th>Sale Person</th>
               <th>Date Of Callback</th>
@@ -19,13 +20,14 @@
             {% for i in calls %}
               <tr class="call" data-date="{{ i.date|date:'Y-m-d' }}">
                 <td scope="row">{{ forloop.counter }}</td>
-                <td class="date-cell">{{ i.date }}</td>
-                <td>
-                  <h5>{{ i.duty.lead }}</h5>
-                </td>
                 <td>
                   <h6>{{ i.duty.lead.phone }}</h6>
                 </td>
+                <td>
+                  <h5>{{ i.duty.lead }}</h5>
+                </td>
+                <td class="date-cell">{{ i.date }}</td>
+                <td class="date-cell"> <a href="{% url 'lead_status' i.duty.lead.id %}"><span class="badge bg-label-primary me-1">Lead Status</span></a></td>
               </tr>
             {% endfor %}
           </tbody>

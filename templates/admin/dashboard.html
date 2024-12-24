@@ -17,8 +17,12 @@
                             ];
                           var chart = new CanvasJS.Chart("chartContainer",
                           {
-                            title:{
-                              text: ""
+                            axisY: {
+                              title: 'Sales',
+                              valueFormatString: '#,###',
+                              suffix: '',
+                              minimum: 0,
+                              gridThickness: 0
                             },
                             data: [
                             {

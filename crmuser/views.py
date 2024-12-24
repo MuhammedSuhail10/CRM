@@ -20,15 +20,14 @@ def home(request):
         callbacks = Callback.objects.filter(duty__emp=sale).count()
         total_duty = Duty.objects.filter(emp=sale).count()
         total_won = Won.objects.filter(employee=sale).count()
-        completed = Duty.objects.filter(emp=sale, lead__lead_status=True,lead__closed=False).count()
-        uncompleted = Duty.objects.filter(emp=sale, lead__lead_status=False,lead__trash=False).count()
-        wons = Duty.objects.filter(emp=sale, lead__closed=True).count()
+        completed = Duty.objects.filter(emp=sale, lead__lead_status=True,lead__closed=False, created_on=datetime.now()).count()
+        uncompleted = Duty.objects.filter(emp=sale, lead__lead_status=False,lead__trash=False, created_on=datetime.now()).count()
+        wons = Won.objects.filter(employee=sale, won_on=datetime.now()).count()
         leads_won = Won.objects.filter(employee=sale).annotate(month=ExtractMonth("won_on")).values("month").annotate(
             count=Count("id")).values("month", "count")[:3]
         callbacks_today  = []
-        for i in Callback.objects.filter(duty__emp=sale):
-            if i.date == timezone.now().date():
-                callbacks_today.append(i.duty.lead)
+        for i in Callback.objects.filter(duty__emp=sale, date = timezone.now().date()):
+            callbacks_today.append(i.duty.lead)
         current_month = datetime.now().month
         target = Target.objects.filter(sale=sale, date__month=current_month, type="Monthly").first()
         daily = Target.objects.filter(sale=sale, date=datetime.now(), type="Daily").first()
@@ -54,7 +53,7 @@ def lead(request):
                 dut = Duty.objects.get(lead__phone=number)
                 message = f"Lead already exists. Asssigned to : {dut.sale}"
                 messages.error(request, message)
-                return redirect('lead')
+                return redirect('user_lead')
             leads = Lead.objects.create(name=name, phone=number,assign_status=True,admin=sale.admin)
             leads.save()
             duty = Duty.objects.create(emp=sale, lead=Lead.objects.get(phone=number), delete_date=(timezone.now().date() + timedelta(days=1)))
@@ -135,8 +134,7 @@ def totalfollow(request):
 def leads_won(request):
     if request.user.type == "employee" and not request.user.block:
         user = request.user
-        sale = Employee.objects.filter(user=user).first()
-        won = Won.objects.filter(employee=sale).order_by('-id')
+        won = Won.objects.filter(employee__user=user).order_by('-id')
         return render(request, 'user/won.html', {'duty': won})
     return redirect('login')
 

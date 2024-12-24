@@ -21,13 +21,13 @@
             <tbody>
             {% for i in courses %}
             <tr>
-                <th scope="row">1</th>
+                <th scope="row">{{forloop.counter}}</th>
                 <td>{{i.name}}</td>
                 <td>Course Duration : {{i.duration}} <br> Internship Duration : {{i.internship}}</td>
                 <td>Base Fees : {{i.rate}} &nbsp; Gst : {{i.gst}}% <br>Total Rate : {{i.total_rate}}</td>
                 <td>    
-                    <button class="btn btn-primary">Download</button>
-                </a></td>
+                    <a href="{{ i.syllabus.url }}" target="_blank" download class="btn btn-primary">Download</a>
+                </td>
             </tr>
             {% endfor %}
             </tbody>

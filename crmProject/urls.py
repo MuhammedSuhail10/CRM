@@ -8,4 +8,5 @@ urlpatterns = [
     path('',include('user.urls')),
     path('',include('crmAdmin.urls')),
     path('employee/',include('crmuser.urls')),
+    path('superuser/',include('superuser.urls')),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -28,7 +28,7 @@
 
           {% comment %}Leads{% endcomment %}
           <li class="w-75 my-3">
-            <a href="{% url 'lead' %}" class="d-flex justify-content-center align-items-center gap-2 text-center" style="color: #F0F8FF;">
+            <a href="/lead" class="d-flex justify-content-center align-items-center gap-2 text-center" style="color: #F0F8FF;">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 1024 1024"><path fill="currentColor" d="M955 768q-20 34-58 44.5t-72.5-9.5t-45-58.5T789 672q61-106 68-226.5T817.5 216T680 29q47 16 88 40q90 52 152 134.5t87 176t12.5 196T955 768zM768 955q-90 52-192.5 64.5t-196-12.5t-176-87T69 768q-20-34-10-72.5t44.5-58.5t73-9.5T235 672q46 80 116 138t151 86.5t170.5 31T846 899q-37 33-78 56zM512 192q-123 0-230.5 54.5T103 395.5T9 608q-9-49-9-96q0-104 40.5-199t109-163.5T313 40.5T512 0q40 0 68 28t28 68t-28 68t-68 28z"/></svg>
               <div>Leads</div>
             </a>
@@ -36,7 +36,7 @@
 
           {% comment %}Employees{% endcomment %}
           <li class="w-75 my-3">
-            <a href="{% url 'employee' %}" class="d-flex justify-content-center align-items-center gap-2 text-center" style="color: #F0F8FF;">
+            <a href="/employee" class="d-flex justify-content-center align-items-center gap-2 text-center" style="color: #F0F8FF;">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32"><path fill="currentColor" d="M28.523 23.813c-.518-.51-6.795-2.938-7.934-3.396c-1.133-.45-1.585-1.697-1.585-1.697s-.51.282-.51-.51c0-.793.51.51 1.02-2.548c0 0 1.415-.397 1.134-3.68h-.34s.85-3.51 0-4.698c-.853-1.188-1.187-1.98-3.06-2.548c-1.87-.567-1.19-.454-2.548-.396c-1.36.057-2.492.793-2.492 1.188c0 0-.85.057-1.188.397c-.34.34-.906 1.924-.906 2.32s.283 3.06.566 3.624l-.337.11c-.283 3.284 1.132 3.682 1.132 3.682c.51 3.058 1.02 1.755 1.02 2.548c0 .792-.51.51-.51.51s-.453 1.246-1.585 1.697c-1.132.453-7.416 2.887-7.927 3.396c-.51.52-.453 2.896-.453 2.896h26.954s.063-2.378-.453-2.897zm-6.335 2.25h-4.562v-1.25h4.562v1.25z"/></svg>
               <div>Employees</div>
             </a>
@@ -60,7 +60,7 @@
 
           {% comment %}Leads Won{% endcomment %}
           <li class="w-75 my-3">
-            <a href="{% url 'won' %}" class="d-flex justify-content-center align-items-center gap-2 text-center" style="color: #F0F8FF;">
+            <a href="/leads_won" class="d-flex justify-content-center align-items-center gap-2 text-center" style="color: #F0F8FF;">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M7.775 17.688a.58.58 0 0 0-.782.078a.54.54 0 0 0 0 .712c1.79 1.425 3.855 1.653 4.898 1.664c1.949.022 4.136-1.01 4.986-1.53c.18-.11.4-.42.16-.774c-.242-.353-.656-.247-.833-.15c-.697.434-2.535 1.303-4.312 1.303a7.23 7.23 0 0 1-4.113-1.3zM7.714 7.286a1.286 1.286 0 1 0 0-2.572a1.286 1.286 0 0 0 0 2.572m8.744-2.506c.252-.12.517-.06.595.072c.143.245.01.4-.075.45l-1.393.683c.381.188 1.185.586 1.354.668c.212.103.268.299.124.506c-.097.141-.378.158-.509.083l-1.728-.857A.44.44 0 0 1 14.572 6a.49.49 0 0 1 .254-.424c.44-.216 1.38-.677 1.632-.798m-5.322 11.129l.985-3.085l1.22 3.155a1.155 1.155 0 0 0 1.476.665a1.12 1.12 0 0 0 .727-.936l1.558-5.689a1.124 1.124 0 0 0-.8-1.388a1.15 1.15 0 0 0-1.402.808l-.684 2.496l-1.014-2.624a1.16 1.16 0 0 0-1.211-.73a1.155 1.155 0 0 0-1.158.8l-.872 2.728l-.873-2.728a1.154 1.154 0 0 0-1.824-.54a1.12 1.12 0 0 0-.352 1.208l1.874 5.86a1.155 1.155 0 0 0 1.174.798a1.155 1.155 0 0 0 1.176-.798"/></svg>
               <div>Leads Won</div>
             </a>
@@ -93,7 +93,7 @@
           </li>
 
           {% comment %}Not Answered Leads{% endcomment %}
-          <li class="w-75 my-3">
+          <li class="w-75 my-3 mx-2 ">
             <a href="{% url 'not_answered' %}" class="d-flex justify-content-center align-items-center gap-2 text-center" style="color: #F0F8FF;">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M22.414 3L11.833 13.58c.508.441 1.049.846 1.617 1.211l1.86-1.859L22 14.42V23h-1a19.91 19.91 0 0 1-10.85-3.197a20.085 20.085 0 0 1-2.567-1.971L3 22.414L1.586 21L21 1.586L22.414 3ZM9 16.415a18.069 18.069 0 0 0 2.237 1.71A17.892 17.892 0 0 0 20 20.972v-4.949l-4.053-.9l-2.174 2.175l-.663-.377A16.038 16.038 0 0 1 10.415 15L9 16.415ZM1 2h8.58l1.487 6.69l-1.865 1.866l.297.504l-1.723 1.015l-1.084-1.839l2.184-2.183L7.976 4H3.027a17.893 17.893 0 0 0 3.097 9.138l.564.825l-1.652 1.128l-.564-.825A19.911 19.911 0 0 1 1 3V2Z"/></svg>
               <div>Not Answered Leads</div>

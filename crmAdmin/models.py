@@ -6,9 +6,11 @@ from user.models import *
 class Admins(models.Model):
     superadmin = models.ForeignKey(UserInfo,on_delete=models.CASCADE, related_name="superadmin")
     user = models.ForeignKey(UserInfo,on_delete=models.CASCADE, related_name="admin")
+    target = models.IntegerField()
+    target_won = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.user.first_name
+        return self.user.name
 
 # Employee
 class Employee(models.Model):
@@ -45,7 +47,7 @@ class Course(models.Model):
 
 # Leads
 class Lead(models.Model):
-    admin = models.ForeignKey(UserInfo,on_delete=models.CASCADE)
+    admin = models.ForeignKey(UserInfo,on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
     whatsapp = models.CharField(max_length=100, null=True, blank=True)
@@ -100,6 +102,7 @@ class Payment(models.Model):
 
 # Reports
 class Report(models.Model):
+    admin = models.ForeignKey(UserInfo,on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     csv = models.FileField(upload_to='report')
     created_on = models.DateField(auto_now=True)
@@ -111,10 +114,10 @@ class Report(models.Model):
 class SaleReport(models.Model):
     date = models.DateField(auto_now=True)
     emp = models.ForeignKey(Employee,on_delete=models.CASCADE)
-    total = models.IntegerField()
-    follow = models.IntegerField()
-    Notanswer = models.IntegerField()
-    Notinterested = models.IntegerField()
+    total = models.IntegerField(default=0)
+    follow = models.IntegerField(default=0)
+    Notanswer = models.IntegerField(default=0)
+    Notinterested = models.IntegerField(default=0)
 
 class TrashLead(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE)

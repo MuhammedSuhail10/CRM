@@ -14,6 +14,8 @@ class Command(BaseCommand):
         self.reset_employee()
         self.reset_target()
         self.delete_duty(yesterday)
+        self.create_sale_report()
+
         if today == start_of_month:
             self.reset_monthly_target()
 
@@ -36,7 +38,11 @@ class Command(BaseCommand):
     def delete_duty(self, yesterday):
         for i in Duty.objects.all():
             if yesterday == i.delete_date and (i.lead.lead_status == False and i.lead.closed == False):
-                lead = leeds.objects.get(number=i.lead.number)
-                lead.assign_status = 'No'
+                lead = Lead.objects.get(id=i.lead.id)
+                lead.assign_status = False
                 lead.save()
                 i.delete()
+
+    def create_sale_report(self):
+        for i in Employee.objects.all():
+            report = SaleReport.objects.create(emp=i)

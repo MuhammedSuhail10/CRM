@@ -2,6 +2,10 @@ from django.urls import path
 from crmAdmin import views
 
 urlpatterns=[
+       # Meta Connection
+       path("meta/leads", views.facebook_webhook,name="facebook-webhook"),
+       path("privacy_policy", views.privacy,name="privacy-policy"),
+
        # Dashboard
        path('',views.dash,name="dash"),
        path('dashboard',views.dash,name="dash"),
@@ -13,7 +17,7 @@ urlpatterns=[
        path('lead/<int:id>/status', views.lead_status, name="lead_status"),
        
        # Employees
-       path('employee',views.employee,name='employee'),
+       path('employee',views.employee,name='admin_employee'),
        path('blocked_emp',views.blocked_emp,name='blocked_emp'),
        path('daily',views.daily,name='daily'),
        path('monthly',views.monthly,name='monthly'),
