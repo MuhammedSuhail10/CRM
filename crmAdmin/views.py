@@ -448,7 +448,7 @@ def trash_leads(request):
         return render(request, 'admin/trash.html',{'assign':assign})
     return redirect('login')
 
-# Recovver Trash Leads
+# Recover Trash Leads
 @login_required(login_url='login')
 def recover_lead(request,id):
     if request.user.type == "admin" and not request.user.block:
@@ -460,8 +460,10 @@ def recover_lead(request,id):
         return render(request, 'admin/trash.html',{'assign':assign})
     return redirect('login')
 
+# Return month name
 def get_month_name(month_number):
     return calendar.month_name[month_number]
 
+# Privacy Policy Page
 def privacy(request):
     return render(request, 'privacypolicy.html')
