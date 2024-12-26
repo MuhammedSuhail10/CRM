@@ -3,7 +3,7 @@ from crmAdmin import views
 
 urlpatterns=[
        # Meta Connection
-       path("meta/leads", views.facebook_webhook,name="facebook-webhook"),
+       # path("meta/leads", views.facebook_webhook,name="facebook-webhook"),
        path("privacy_policy", views.privacy,name="privacy-policy"),
 
        # Dashboard
@@ -12,6 +12,7 @@ urlpatterns=[
        
        # Lead
        path('lead', views.leads, name="lead"),
+       path('campain_leads', views.campain_leads, name="campain_leads"),
        path('edit_lead/<int:id>', views.edit_lead, name="edit_lead"),
        path('del_lead/<int:id>',views.del_lead,name="del_lead"),
        path('lead/<int:id>/status', views.lead_status, name="lead_status"),

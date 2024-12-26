@@ -7,6 +7,7 @@ from django.db.models.functions import ExtractMonth
 from django.shortcuts import render, redirect
 from crmAdmin.models import *
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Dashboard
 @login_required(login_url='login')
@@ -154,8 +155,22 @@ def delete_employee(request, id):
 @login_required(login_url='login')
 def leads(request):
     if request.user.type == "superadmin":
-        lead = Lead.objects.all().order_by('-id')
-        return render(request,'superuser/leads.html',{"lead":lead})
+        page = request.GET.get('page', 1)
+        lead = Lead.objects.filter(campain=False).order_by('-id')
+        paginator = Paginator(lead, 25)
+        leads = paginator.get_page(page)
+        return render(request, 'superuser/leads.html', {"lead": leads})
+    return redirect('login')
+
+# Campain Leads
+@login_required(login_url='login')
+def campain_leads(request):
+    if request.user.type == "superadmin":
+        page = request.GET.get('page', 1)
+        leads = Lead.objects.filter(campain=True).order_by('-id')
+        paginator = Paginator(leads, 25)
+        leads = paginator.get_page(page)
+        return render(request, 'superuser/campain_leads.html', {"lead": leads})
     return redirect('login')
 
 # Leads Status
@@ -178,7 +193,10 @@ def follows(request):
             leads = Leadstatus.objects.filter(lead=i.lead).last()
             if leads:
                 list.append((leads,i.emp))
-        return render(request,'superuser/followup.html',{"lead":list})
+        page = request.GET.get('page', 1)
+        paginator = Paginator(list, 25)
+        lists = paginator.get_page(page)
+        return render(request,'superuser/followup.html',{"lead":lists})
     return redirect('login')
 
 # Won
@@ -186,7 +204,10 @@ def follows(request):
 def wons(request):
     if request.user.type == "superadmin":
         won = Won.objects.all().order_by('-won_on')
-        return render(request,'superuser/won.html', {'won':won})
+        page = request.GET.get('page', 1)
+        paginator = Paginator(won, 25)
+        wons = paginator.get_page(page)
+        return render(request,'superuser/won.html', {'won':wons})
     return redirect('login')
 
 # Payments
@@ -201,8 +222,11 @@ def payment(request):
 @login_required(login_url='login')
 def callbacks(request):
     if request.user.type == "superadmin":
+        page = request.GET.get('page', 1)
         callback = Callback.objects.all().order_by('-id')
-        return render(request,'superuser/callback.html', {'callback':callback})
+        paginator = Paginator(callback, 25)
+        callbacks = paginator.get_page(page)
+        return render(request,'superuser/callback.html', {'callback':callbacks})
     return redirect('login')
 
 # Not Answered Leads

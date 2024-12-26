@@ -43,8 +43,11 @@ def lead(request):
     if request.user.type == "employee" and not request.user.block:
         user = request.user
         sale = Employee.objects.filter(user=user).first()
-        duty = Duty.objects.filter(emp=sale, lead__lead_status=False,lead__trash=False).order_by('-created_on')
-        
+        duty = Duty.objects.filter(emp=sale, lead__lead_status=False, lead__trash=False, lead__campain=False).order_by('-created_on')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(duty, 25)
+        duties = paginator.get_page(page)
+
         ## Adding Reference
         if request.method == 'POST':
             name = request.POST.get('name')
@@ -59,7 +62,20 @@ def lead(request):
             duty = Duty.objects.create(emp=sale, lead=Lead.objects.get(phone=number), delete_date=(timezone.now().date() + timedelta(days=1)))
             duty.save()
             return redirect('user_lead')
-        return render(request, 'user/leads.html', {'duty': duty})
+        return render(request, 'user/leads.html', {'duty': duties})
+    return redirect('login')
+
+# Leads assigned to an Employee
+@login_required(login_url='login')
+def campain_lead(request):
+    if request.user.type == "employee" and not request.user.block:
+        user = request.user
+        sale = Employee.objects.filter(user=user).first()
+        duty = Duty.objects.filter(emp=sale, lead__lead_status=False, lead__trash=False, lead__campain=True).order_by('-created_on')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(duty, 25)
+        duties = paginator.get_page(page)
+        return render(request, 'user/campain_leads.html', {'duty': duties})
     return redirect('login')
 
 # Lead status
@@ -111,7 +127,10 @@ def followups(request):
             leads = Leadstatus.objects.filter(lead=i.lead, contacted_on__month=current_month).last()
             if leads:
                 list.append(leads)
-        return render(request, 'user/followups.html', {'duty': list})
+        page = request.GET.get('page', 1)
+        paginator = Paginator(list, 25)
+        lists = paginator.get_page(page)
+        return render(request, 'user/followups.html', {'duty': lists})
     return redirect('login')
 
 # Total follow ups

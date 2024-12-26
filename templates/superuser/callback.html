@@ -44,11 +44,33 @@
             </div>
           {% else %}
             <div style="height: 10em;width: 100%;display: flex;" class="justify-content-center align-items-center">
-              <h4>No {{ title }}</h4>
+              <h4>No Callback yet</h4>
             </div>
           {% endif %}
         </div>
       </div>
     </div>
   </div>
+
+  {% if callback.has_other_pages %}
+  <ul class="pagination">
+    {% if callback.has_previous %}
+      <li><a href="?page={{ callback.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in callback.paginator.page_range %}
+      {% if callback.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if callback.has_next %}
+      <li><a href="?page={{ callback.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
 {% endblock %}

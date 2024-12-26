@@ -14,9 +14,9 @@ from django.http import HttpResponse, HttpResponseForbidden
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-from facebook_business.api import FacebookAdsApi
-from facebook_business.adobjects.lead import Lead
-from facebook_business.exceptions import FacebookRequestError
+# from facebook_business.api import FacebookAdsApi
+# from facebook_business.adobjects.lead import Lead
+# from facebook_business.exceptions import FacebookRequestError
 from django.views.decorators.csrf import csrf_exempt
 
 class FacebookLeadAds:
@@ -80,12 +80,30 @@ def dash(request):
 @login_required(login_url='login')
 def leads(request):
     if request.user and request.user.type == "admin" and not request.user.block:
-        lead = Lead.objects.filter(admin=request.user, trash=False).order_by('-id')
-        count = Lead.objects.filter(admin=request.user, trash=False).count()
+        lead = Lead.objects.filter(admin=request.user, trash=False, campain=False).order_by('-id')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(lead, 25)
+        leads = paginator.get_page(page)
+        count = Lead.objects.filter(admin=request.user, trash=False, campain=False).count()
         if request.method == "POST":
-            csv_fetch(request.FILES['file'],request.user)
+            csv_fetch(request.FILES['file'], request.user)
             return redirect('lead')
-        return render(request,"admin/leed.html",{'lead':lead,'count':count})
+        return render(request,"admin/leed.html",{'lead':leads,'count':count})
+    return redirect('login')
+
+# Campain Leads
+@login_required(login_url='login')
+def campain_leads(request):
+    if request.user and request.user.type == "admin" and not request.user.block:
+        lead = Lead.objects.filter(admin=request.user, trash=False, campain=True).order_by('-id')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(lead, 25)
+        leads = paginator.get_page(page)
+        count = Lead.objects.filter(admin=request.user, trash=False, campain=True).count()
+        if request.method == "POST":
+            csv_fetch(request.FILES['file'], request.user)
+            return redirect('lead')
+        return render(request,"admin/campain_leads.html",{'lead':leads,'count':count})
     return redirect('login')
 
 # Edit Lead details
@@ -208,6 +226,9 @@ def duty(request,id):
     if request.user.type == "admin" and not request.user.block:
         person1 = Employee.objects.get(id=id)
         duty = Duty.objects.filter(emp=person1).order_by('-id')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(duty, 25)
+        duties = paginator.get_page(page)
         target = Target.objects.filter(sale=person1,type="Monthly").order_by('-id').annotate(month=ExtractMonth("date")).values("month").annotate(target_won=Sum('target_won'),target=Sum('target'),target_remaining=F('target') - F('target_won')).values("month", "target_won","target","target_remaining")
         daily = Target.objects.filter(sale=person1,type="Daily").order_by('-id').annotate(month=ExtractMonth("date")).values('month').annotate(target_won=Sum('target_won'),target=Sum('target'),target_remaining=F('target') - F('target_won')).values("date", "target_won","target","target_remaining")
 
@@ -225,7 +246,7 @@ def duty(request,id):
                 target = Daily_Target(sale=saleperson.objects.get(id=person),target=target,target_remaining=target,target_won=target_won,date=timezone.now())
                 target.save()
             return redirect('duty',id=id)
-        return render(request, "admin/duty.html",{'duty':duty,'person1':person1,'data':target,'daily':daily})
+        return render(request, "admin/duty.html",{'duty':duties,'person1':person1,'data':target,'daily':daily})
     return redirect('login')
 
 # Daily Targets
@@ -369,7 +390,10 @@ def followup(request):
             leads = Leadstatus.objects.filter(lead=i.lead).last()
             if leads:
                 list.append(leads)
-        return render(request, 'admin/followups.html', {'duty': list})
+        page = request.GET.get('page', 1)
+        paginator = Paginator(list, 25)
+        lists = paginator.get_page(page)
+        return render(request, 'admin/followups.html', {'duty': lists})
     return redirect('login')
 
 # Payments
@@ -385,7 +409,10 @@ def payments(request):
 def callbacks(request):
     if request.user.type == "admin" and not request.user.block:
         calls = Callback.objects.filter(duty__lead__admin=request.user)
-        return render(request,"admin/callback.html",{'calls':calls})
+        page = request.GET.get('page', 1)
+        paginator = Paginator(calls, 25)
+        call = paginator.get_page(page)
+        return render(request,"admin/callback.html",{'calls':call})
     return redirect('login')
 
 # Won Leads
@@ -393,7 +420,10 @@ def callbacks(request):
 def won(request):
     if request.user.type == "admin" and not request.user.block:
         won = Won.objects.filter(lead__admin = request.user).order_by('-id')
-        return render(request, "admin/leads_won.html",{'won':won})
+        page = request.GET.get('page', 1)
+        paginator = Paginator(won, 25)
+        wons = paginator.get_page(page)
+        return render(request, "admin/leads_won.html",{'won':wons})
     return redirect('login')
 
 # Edit Profile

@@ -3,7 +3,7 @@ from django.contrib.auth.models import *
 
 class UserInfoManager(BaseUserManager):
     def create_user(self, email, name, phone, type, password=None):
-        if not email:
+        if not phone:
             raise ValueError('Users must have an phone number')
         user = self.model(
             email=self.normalize_email(email),

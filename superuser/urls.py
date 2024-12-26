@@ -20,6 +20,7 @@ urlpatterns = [
     path("delete_employee<int:id>",delete_employee, name="delete_employee"),
     # Leads
     path("lead", leads, name="super_lead"),
+    path("campain_lead", campain_leads, name="super_campain_lead"),
     path("status<int:id>", status, name="super_status"),
     path("followup", follows, name="super_followups"),
 

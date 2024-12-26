@@ -55,6 +55,7 @@ class Lead(models.Model):
     department = models.CharField(max_length=100, null=True, blank=True)
     assign_status = models.BooleanField(default=False)
     lead_status = models.BooleanField(default=False)
+    campain = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     trash = models.BooleanField(default=False)
 
