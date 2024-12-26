@@ -14,9 +14,9 @@ from django.http import HttpResponse, HttpResponseForbidden
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-# from facebook_business.api import FacebookAdsApi
-# from facebook_business.adobjects.lead import Lead
-# from facebook_business.exceptions import FacebookRequestError
+from facebook_business.api import FacebookAdsApi
+from facebook_business.adobjects.lead import Lead
+from facebook_business.exceptions import FacebookRequestError
 from django.views.decorators.csrf import csrf_exempt
 
 class FacebookLeadAds:
@@ -29,19 +29,22 @@ class FacebookLeadAds:
             access_token=self.access_token, app_secret=self.app_secret, app_id=self.app_id
         )
 
-    def get_lead_email(self, lead_id):
+    def get_lead_data(self, lead_id):
         try:
             lead = Lead(lead_id).api_get()
         except FacebookRequestError as e:
             return False
 
         lead_data = lead.get("field_data", None)
+        lead_info = {"email": None, "number": None, "name": None}
         for data in lead_data:
-            print(data)
             if data.get("name", None) in ["e-mail", "email"]:
-                email = data.get("values")[0]
-                return email.strip().lower()
-        return False
+                lead_info["email"] = data.get("values")[0].strip().lower()
+            elif data.get("name", None) in ["phone_number", "phone"]:
+                lead_info["number"] = data.get("values")[0].strip()
+            elif data.get("name", None) in ["full_name", "name"]:
+                lead_info["name"] = data.get("values")[0].strip()
+        return lead_info
 
 @csrf_exempt
 def facebook_webhook(request):
@@ -58,9 +61,12 @@ def facebook_webhook(request):
             changes = data["changes"]
             for change in changes:
                 leadgen_id = change["value"]["leadgen_id"]
-                lead_email = FacebookLeadAds().get_lead_email(leadgen_id)
-                if not lead_email:
-                    return HttpResponse({"success": False})
+                lead_data = FacebookLeadAds().get_lead_data(leadgen_id)
+                if lead_data and lead_data.get("email") and lead_data.get("number") and lead_data.get("name"):
+                    lead_email = lead_data.get("email")
+                    lead_number = lead_data.get("number")
+                    lead_name = lead_data.get("name")
+                    Lead.objects.create(email=lead_email, number=lead_number, name=lead_name, campain=True)
         return HttpResponse({"success": True})
 
 # Dashboard
