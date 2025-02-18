@@ -9,12 +9,11 @@ def login_(request):
         if UserInfo.objects.filter(phone=request.POST.get('username')).exists():
             user = UserInfo.objects.get(phone=request.POST.get('username'))
             if check_password(request.POST.get('password'), user.password):
-                if user.type == "superadmin" or user.type == "admin" or user.type == "employee":
-                    if user.block:
-                        messages.error(request,"User blocked")  
-                        return redirect('login')
-                    login(request,user)
-                    return redirect('super_dash') if user.type == "superadmin" else redirect('dash') if user.type == "admin" else redirect('home')
+                if user.block:
+                    messages.error(request,"User blocked")  
+                    return redirect('login')
+                login(request, user)
+                return redirect('super_dash') if user.type == "superadmin" else redirect('dash') if user.type == "admin" else redirect('home')
         messages.error(request,"Invalid credentials")  
         return redirect('login')
     return render(request,'login.html')

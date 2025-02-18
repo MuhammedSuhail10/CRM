@@ -46,9 +46,9 @@
                             <span class="badge text-bg-danger">Trash</span>
                           {% else %}
                             {% if i.assign_status %}
-                            <span class="badge text-bg-primary">Assigned</span>
-                            {% if not i.lead_status %}
-                              <span class="badge text-bg-warning">Not Answered</span>
+                              <span class="badge text-bg-primary">Assigned</span>
+                              {% if not i.lead_status %}
+                                <span class="badge text-bg-warning">Not Answered</span>
                               {% endif %}
                             {% else %}
                               <span class="badge text-bg-danger">Unassigned</span>
@@ -59,7 +59,7 @@
                           {% endif %}
                         </td>
                         <td class="align-middle">
-                          <a href="{% url 'super_status' i.id %}" class="text-sm mt-2 badge text-bg-outline-info text-primary">Lead Status </a>
+                          <a href="{% url 'super_status' i.id %}" class="text-sm mt-2 badge text-bg-outline-info text-primary">Lead Status</a>
                         </td>
                       </tr>
                     {% endfor %}
@@ -77,24 +77,39 @@
     </div>
   </div>
   {% if lead.has_other_pages %}
-  <ul class="pagination">
-    {% if lead.has_previous %}
-      <li><a href="?page={{ lead.previous_page_number }}">&laquo;</a></li>
-    {% else %}
-      <li class="disabled"><span>&laquo;</span></li>
-    {% endif %}
-    {% for i in lead.paginator.page_range %}
-      {% if lead.number == i %}
-        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+    <ul class="pagination">
+      {% if lead.has_previous %}
+        <li>
+          <a href="?page={{ lead.previous_page_number }}" aria-label="Previous page">&laquo;</a>
+        </li>
       {% else %}
-        <li><a href="?page={{ i }}">{{ i }}</a></li>
+        <li class="disabled">
+          <span aria-hidden="true">&laquo;</span>
+        </li>
       {% endif %}
-    {% endfor %}
-    {% if lead.has_next %}
-      <li><a href="?page={{ lead.next_page_number }}">&raquo;</a></li>
-    {% else %}
-      <li class="disabled"><span>&raquo;</span></li>
-    {% endif %}
-  </ul>
-{% endif %}
+      {% if lead.number != 1 %}
+        <li>
+          <a href="?page=1">1</a>
+        </li>
+      {% endif %}
+      <li class="active">
+        <span>{{ lead.number }} <span class="sr-only">(current)</span></span>
+      </li>
+      {% if lead.paginator.num_pages > 1 %}
+        <li>
+          <a href="?page={{ lead.paginator.num_pages }}">{{ lead.paginator.num_pages }}</a>
+        </li>
+      {% endif %}
+
+      {% if lead.has_next %}
+        <li>
+          <a href="?page={{ lead.next_page_number }}" aria-label="Next page">&raquo;</a>
+        </li>
+      {% else %}
+        <li class="disabled">
+          <span aria-hidden="true">&raquo;</span>
+        </li>
+      {% endif %}
+    </ul>
+  {% endif %}
 {% endblock %}

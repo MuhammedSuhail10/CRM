@@ -35,7 +35,7 @@ def dash(request):
 @login_required(login_url='login')
 def admins(request):
     if request.user.type == "superadmin":
-        admin = Admins.objects.filter(user__block = False).order_by('-id')
+        admin = Admins.objects.filter(user__block = False, superadmin=request.user).order_by('-id')
         title = "Admins"
         return render(request,'superuser/admins.html', {'admin':admin, 'title':title})
     return redirect('login')
@@ -45,7 +45,7 @@ def admins(request):
 def banned_admins(request, action):
     if request.user.type == "superadmin":
         if action == 'ban':
-            admin = Admins.objects.filter(user__block = True).order_by('-id')
+            admin = Admins.objects.filter(user__block = True, superadmin=request.user).order_by('-id')
             title = "Banned Admins"
             return render(request,'superuser/admins.html', {'admin':admin, 'title':title})
     return redirect('login')

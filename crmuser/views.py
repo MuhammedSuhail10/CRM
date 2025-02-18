@@ -14,7 +14,7 @@ def home(request):
     if request.user.type == "employee" and not request.user.block:
         user = request.user
         sale = Employee.objects.get(user=user)
-        duty = Duty.objects.filter(emp=sale, lead__lead_status=False, lead__trash=False).order_by('-created_on')[:4]
+        duty = Duty.objects.filter(emp=sale, lead__lead_status=False, lead__trash=False, lead__closed=False).order_by('-created_on')[:4]
         calls = Callback.objects.filter(duty__emp=sale)[:4]
         courses = Course.objects.all()
         callbacks = Callback.objects.filter(duty__emp=sale).count()
@@ -91,7 +91,7 @@ def status(request, id):
             stats = request.POST.get('status')
             notes = request.POST.get('notes')
             probability = request.POST.get('probability')
-            course = Course.objects.get(id=request.POST.get('courses')) if request.POST.get('courses') else None
+            course = Course.objects.get(id=request.POST.get('course')) if request.POST.get('course') else None
             status = Leadstatus.objects.create(lead=lead, status=stats, progress=progress, notes=notes, probability=probability, course=course)
             status.save()
 

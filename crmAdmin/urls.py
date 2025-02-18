@@ -3,7 +3,7 @@ from crmAdmin import views
 
 urlpatterns=[
        # Meta Connection
-       # path("meta/leads", views.facebook_webhook,name="facebook-webhook"),
+       path("meta/leads", views.facebook_webhook,name="facebook-webhook"),
        path("privacy_policy", views.privacy,name="privacy-policy"),
 
        # Dashboard

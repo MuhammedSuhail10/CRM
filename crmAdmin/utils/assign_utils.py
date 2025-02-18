@@ -15,3 +15,15 @@ def assign_leads(lead):
             i.save()
             lead.assign_status = True
             lead.save()
+
+def assign_campain_leads(lead):
+    emp = Employee.objects.filter(admin=lead.admin, user__block=False).order_by('-campain_leads').first()
+    delete_date = timezone.now().date() + timedelta(days=1)
+    duty = Duty.objects.create(lead=lead, emp=emp, delete_date=delete_date)
+    duty.save()
+    emp.todays_lead += 1
+    emp.total_lead += 1
+    emp.campain_leads += 1
+    emp.save()
+    lead.assign_status = True
+    lead.save()

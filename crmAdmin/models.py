@@ -19,6 +19,7 @@ class Employee(models.Model):
     strength = models.IntegerField()
     total_lead = models.IntegerField(default=0)
     todays_lead = models.IntegerField(default=0)
+    campain_leads = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.name

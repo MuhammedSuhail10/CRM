@@ -10,41 +10,13 @@ from .utils.csv_lead import *
 from .utils.assign_utils import *
 import calendar
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseForbidden
-
+import json
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-from facebook_business.api import FacebookAdsApi
-from facebook_business.adobjects.lead import Lead
 from facebook_business.exceptions import FacebookRequestError
 from django.views.decorators.csrf import csrf_exempt
-
-class FacebookLeadAds:
-    access_token = settings.FACEBOOK_ACCESS_TOKEN
-    app_secret = settings.FACEBOOK_APP_SECRET
-    app_id = settings.FACEBOOK_APP_ID
-
-    def __init__(self):
-        FacebookAdsApi.init(
-            access_token=self.access_token, app_secret=self.app_secret, app_id=self.app_id
-        )
-
-    def get_lead_data(self, lead_id):
-        try:
-            lead = Lead(lead_id).api_get()
-        except FacebookRequestError as e:
-            return False
-
-        lead_data = lead.get("field_data", None)
-        lead_info = {"email": None, "number": None, "name": None}
-        for data in lead_data:
-            if data.get("name", None) in ["e-mail", "email"]:
-                lead_info["email"] = data.get("values")[0].strip().lower()
-            elif data.get("name", None) in ["phone_number", "phone"]:
-                lead_info["number"] = data.get("values")[0].strip()
-            elif data.get("name", None) in ["full_name", "name"]:
-                lead_info["name"] = data.get("values")[0].strip()
-        return lead_info
+from .utils.meta import fetch_facebook_lead_data
+from django.core.paginator import Paginator
 
 @csrf_exempt
 def facebook_webhook(request):
@@ -56,17 +28,21 @@ def facebook_webhook(request):
         return HttpResponseForbidden("Wrong verification token")
 
     elif request.method == 'POST':
-        entry = request.POST.get("entry", None)
+        payload = json.loads(request.body.decode('utf-8'))
+        entry = payload.get('entry', [])
         for data in entry:
             changes = data["changes"]
             for change in changes:
-                leadgen_id = change["value"]["leadgen_id"]
-                lead_data = FacebookLeadAds().get_lead_data(leadgen_id)
+                ad_id = change["value"]["leadgen_id"]
+                lead_data = fetch_facebook_lead_data(ad_id)
                 if lead_data and lead_data.get("email") and lead_data.get("number") and lead_data.get("name"):
                     lead_email = lead_data.get("email")
                     lead_number = lead_data.get("number")
+                    number = lead_number[3:] if lead_number.startswith("+91") else lead_number[2:] if lead_number.startswith("91") else lead_number
                     lead_name = lead_data.get("name")
-                    Lead.objects.create(email=lead_email, number=lead_number, name=lead_name, campain=True)
+                    admin = Admins.objects.get(id=1)
+                    lead = Lead.objects.create(email=lead_email, number=number, name=lead_name, campain=True, admin=admin.user)
+                    assign_campain_leads(lead)
         return HttpResponse({"success": True})
 
 # Dashboard
@@ -86,11 +62,11 @@ def dash(request):
 @login_required(login_url='login')
 def leads(request):
     if request.user and request.user.type == "admin" and not request.user.block:
-        lead = Lead.objects.filter(admin=request.user, trash=False, campain=False).order_by('-id')
+        lead = Lead.objects.filter(admin=request.user, trash=False, closed=False, campain=False).order_by('-id')
         page = request.GET.get('page', 1)
         paginator = Paginator(lead, 25)
         leads = paginator.get_page(page)
-        count = Lead.objects.filter(admin=request.user, trash=False, campain=False).count()
+        count = Lead.objects.filter(admin=request.user, trash=False, closed=False, campain=False).count()
         if request.method == "POST":
             csv_fetch(request.FILES['file'], request.user)
             return redirect('lead')
@@ -101,11 +77,11 @@ def leads(request):
 @login_required(login_url='login')
 def campain_leads(request):
     if request.user and request.user.type == "admin" and not request.user.block:
-        lead = Lead.objects.filter(admin=request.user, trash=False, campain=True).order_by('-id')
+        lead = Lead.objects.filter(admin=request.user, trash=False, closed=False, campain=True).order_by('-id')
         page = request.GET.get('page', 1)
         paginator = Paginator(lead, 25)
         leads = paginator.get_page(page)
-        count = Lead.objects.filter(admin=request.user, trash=False, campain=True).count()
+        count = Lead.objects.filter(admin=request.user, trash=False, campain=True, closed=False).count()
         if request.method == "POST":
             csv_fetch(request.FILES['file'], request.user)
             return redirect('lead')
@@ -302,8 +278,8 @@ def del_duty(request,id):
 @login_required(login_url='login')
 def assign(request):
     if request.user.type == "admin" and not request.user.block:
-        assign = Lead.objects.filter(admin=request.user, assign_status=False, trash=False)
-        count = Lead.objects.filter(admin=request.user, assign_status=False, trash=False).count()
+        assign = Lead.objects.filter(admin=request.user, assign_status=False, closed=False, trash=False)
+        count = Lead.objects.filter(admin=request.user, assign_status=False, closed=False, trash=False).count()
         emp = Employee.objects.filter(admin=request.user, strength__gt=0)
         return render(request,"admin/assign_duty.html",{'assign':assign, 'count':count, 'emp':emp})
     return redirect('login')
@@ -327,10 +303,10 @@ def assign_lead(request,id):
 @login_required(login_url='login')
 def assign_all_lead(request):
     if request.user.type == "admin" and not request.user.block:
-        lead = Lead.objects.filter(admin = request.user, assign_status = False, trash=False, lead_status=False)
+        lead = Lead.objects.filter(admin = request.user, assign_status = False, closed=False, trash=False, lead_status=False)
         for i in lead:
             assign_leads(i)
-        other_leads = Lead.objects.filter(admin = request.user, assign_status = False, trash=False)
+        other_leads = Lead.objects.filter(admin = request.user, assign_status = False, trash=False, closed=False)
         for i in other_leads:
             assign_leads(i)
         return redirect('assign')
