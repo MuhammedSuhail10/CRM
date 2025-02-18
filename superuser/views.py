@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth import login, authenticate, logout
@@ -167,10 +167,18 @@ def leads(request):
 def campain_leads(request):
     if request.user.type == "superadmin":
         page = request.GET.get('page', 1)
-        leads = Lead.objects.filter(campain=True).order_by('-id')
+        start_date_str = request.GET.get('start_date', '').strip()
+        end_date_str = request.GET.get('end_date', '').strip()
+        if not start_date_str and not end_date_str:
+            start_date = date.today()
+            end_date = date.today()
+        else:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        leads = Lead.objects.filter(campain=True, created_on__range=[start_date, end_date]).order_by('-id')
         paginator = Paginator(leads, 25)
         leads = paginator.get_page(page)
-        return render(request, 'superuser/campain_leads.html', {"lead": leads})
+        return render(request, 'superuser/campain_leads.html', {"lead": leads, 'start_date': start_date, 'end_date': end_date})
     return redirect('login')
 
 # Leads Status

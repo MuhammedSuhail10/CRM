@@ -59,6 +59,7 @@ class Lead(models.Model):
     campain = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     trash = models.BooleanField(default=False)
+    created_on = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.name
