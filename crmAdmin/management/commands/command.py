@@ -19,6 +19,15 @@ class Command(BaseCommand):
         if today == start_of_month:
             self.reset_monthly_target()
 
+    def remove_leads(self):
+        for i in Lead.objects.all():
+            if Lead.objects.filter(phone=i.phone).count() > 1:
+                duplicate_leads = Lead.objects.filter(phone=i.phone)
+                duplicate_leads.exclude(id=i.id).delete()
+            if i.phone.startswith("+91") or i.phone.startswith("91") and len(i.phone) > 10:
+                i.phone = i.phone[3:] if i.phone.startswith("+91") else i.phone[2:]
+                i.save()
+
     def reset_employee(self):
         for i in Employee.objects.all():
             i.todays_lead = 0

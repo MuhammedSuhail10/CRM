@@ -17,18 +17,19 @@
             </tr>
         </thead>
         <tbody class="leads-list">
-            {% if duty %}
-            {% for i in duty %}
+            {% if report %}
+            {% for i in report %}
             <tr class="lead">
                 <th scope="row">{{forloop.counter}}</th>
                 <td>
-                    <h5>{{i.lead.name}}</h5>
+                    <h5>{{tod}}</h5>
                 </td>
                 <td>
-                    <h6 style="font-weight:600;">{{i.lead.number}}</h6>
+                    <h6 style="font-weight:600;">{{i.total}}</h6>
                 </td>
-                <td>{{i.lead.email}}</td>
-                <td>{{i.lead.department}}</td>
+                <td>{{i.follow}}</td>
+                <td>{{i.Notanswer}}</td>
+                <td>{{i.Notinterested}}</td>
             </tr>
             {% endfor %}
             {% else %}

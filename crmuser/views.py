@@ -120,6 +120,25 @@ def followups(request):
     if request.user.type == "employee" and not request.user.block:
         user = request.user
         sale = Employee.objects.filter(user=user).first()
+        duty = Duty.objects.filter(emp=sale, lead__lead_status=True, lead__closed = False, lead__campain=False).order_by('-created_on')
+        list =[]
+        current_month = datetime.now().month
+        for i in duty:
+            leads = Leadstatus.objects.filter(lead=i.lead, contacted_on__month=current_month).last()
+            if leads:
+                list.append(leads)
+        page = request.GET.get('page', 1)
+        paginator = Paginator(list, 25)
+        lists = paginator.get_page(page)
+        return render(request, 'user/followups.html', {'duty': lists})
+    return redirect('login')
+
+# Campain Follow ups
+@login_required(login_url='login')
+def campain_followups(request):
+    if request.user.type == "employee" and not request.user.block:
+        user = request.user
+        sale = Employee.objects.filter(user=user).first()
         duty = Duty.objects.filter(emp=sale, lead__lead_status=True, lead__closed = False).order_by('-created_on')
         list =[]
         current_month = datetime.now().month
@@ -139,13 +158,13 @@ def totalfollow(request):
     if request.user.type == "employee" and not request.user.block:
         user = request.user
         sale = Employee.objects.filter(user=user).first()
-        duty = Duty.objects.filter(emp=sale, lead__lead_status=True,lead__closed = False).order_by('-created_on')
+        duty = Duty.objects.filter(emp=sale, lead__lead_status=True,lead__closed = False, lead__campain=True).order_by('-created_on')
         list =[]
         for i in duty:
             leads = Leadstatus.objects.filter(lead=i.lead).last()
             if leads:
                 list.append(leads)
-        return render(request, 'user/totalfollow.html', {'duty': list})
+        return render(request, 'user/campain_follows.html', {'duty': list})
     return redirect('login')
 
 # Won leads
@@ -171,4 +190,12 @@ def syllabus(request):
     if request.user.type == "employee" and not request.user.block:
         courses = Course.objects.all()
         return render(request, 'user/syllabus.html', {'courses': courses})
+    return redirect('login')
+
+@login_required(login_url='login')
+def salereports(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        report = SaleReport.objects.filter(sale__user=request.user)
+        tod = timezone.now().date()
+        return render(request, 'user/reports.html', {'report': report,'tod':tod})
     return redirect('login')
